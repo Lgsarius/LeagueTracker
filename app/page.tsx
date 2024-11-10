@@ -307,7 +307,7 @@ export default function HomePage() {
             size="md"
             mt="xl"
           >
-            View Detailed Rankings
+            Bestenliste
           </Button>
         </Link>
       </Container>

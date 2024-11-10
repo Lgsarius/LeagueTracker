@@ -667,11 +667,11 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
       <Group mb="xl" justify="flex-end">
         <Button
           variant="light"
-          leftSection={<IconUserPlus size={20} />}
+          leftSection={<IconRefresh size={20} />}
           onClick={onInitNewPlayers}
           loading={isLoading}
         >
-          Initialize New Players
+          Spieler laden
         </Button>
         <Button
           variant="filled"

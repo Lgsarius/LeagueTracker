@@ -18,7 +18,7 @@ interface PlayerListProps {
 }
 
 // Update the CARD_STYLES constant
-const CARD_STYLES = {
+export const CARD_STYLES = {
   border: '1px solid #ffffff10',
   backdropFilter: 'blur(8px)',
   backgroundColor: 'rgba(255, 255, 255, 0.03)',

@@ -1,11 +1,12 @@
 'use client';
 /* eslint-disable */
-import { Container, AppShell, Title, Text, Box, Group, Paper } from '@mantine/core';
+import { Container, AppShell, Title, Text, Box, Group, Paper, Button } from '@mantine/core';
 import { PlayerList } from '@/components/PlayerList';
 import { useState, useEffect } from 'react';
 import { PlayerData } from '@/types/player';
 import playerData from '@/data/players.json';
 import summonerTags from '@/data/summoner-tags.json';
+import Link from 'next/link';
 
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
@@ -257,7 +258,7 @@ export default function HomePage() {
                 Alle LostGames LoL Spieler
               </Text>
               <Text c="dimmed.4" mt="sm" size="md">
-                Currently tracking: {players.length} players
+                Aktuelle Anzahl an Accounts: {players.length}
               </Text>
             </Box>
           </Group>
@@ -285,6 +286,17 @@ export default function HomePage() {
             onInitNewPlayers={initializeNewPlayers}
           />
         )}
+
+        <Link href="/list">
+          <Button
+            variant="gradient"
+            gradient={{ from: 'indigo', to: 'cyan' }}
+            size="md"
+            mt="xl"
+          >
+            View Detailed Rankings
+          </Button>
+        </Link>
       </Container>
     </AppShell>
   );

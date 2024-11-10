@@ -31,8 +31,85 @@ export default async function handler(
     const summonerData = await fetchSummonerData(accountData.puuid);
     const rankedData = await fetchRankedData(summonerData.id);
     const matchDetails = await fetchMatchDetails(accountData.puuid);
+    // Read existing data file
+    const dataPath = path.join(process.cwd(), 'data', 'players.json');
+    interface PlayerData {
+      players: {
+        [key: string]: {
+          recentMatches?: any[];
+          // ... other player properties can be defined here if needed
+        };
+      };
+    }
+
+    let playerData: PlayerData = { players: {} };
+    try {
+      const fileContent = await fs.readFile(dataPath, 'utf-8');
+      playerData = JSON.parse(fileContent);
+    } catch (error) {
+      // File doesn't exist or is invalid, use empty data object
+    }
 
     // Prepare clean player data
+    const existingPlayer = playerData.players[playerInfo.gameName];
+    const existingMatches = existingPlayer?.recentMatches || [];
+    
+    // Add this interface before the merge logic
+    interface MatchInfo {
+      info: {
+        gameCreation: number;
+        gameDuration: number;
+        gameMode: string;
+        participants: any[];
+      }
+    }
+
+    // Convert new matches to the clean format
+    const newMatches = matchDetails.filter(Boolean).map(match => ({
+      info: {
+        gameCreation: match.info.gameCreation,
+        gameDuration: match.info.gameDuration,
+        gameMode: match.info.gameMode,
+        participants: match.info.participants.map((p: any) => ({
+          puuid: p.puuid,
+          championId: p.championId,
+          championName: p.championName,
+          kills: p.kills,
+          deaths: p.deaths,
+          assists: p.assists,
+          win: p.win,
+        }))
+      }
+    }));
+    
+    // Merge matches, avoiding duplicates by gameCreation time
+    const mergedMatches = [...newMatches];
+    existingMatches.forEach((existingMatch: MatchInfo) => {
+      if (!mergedMatches.some(newMatch => 
+        newMatch.info.gameCreation === existingMatch.info.gameCreation
+      )) {
+        // Ensure existingMatch has all required properties before pushing
+        if (existingMatch?.info?.gameCreation && 
+            existingMatch?.info?.gameDuration && 
+            existingMatch?.info?.gameMode && 
+            existingMatch?.info?.participants) {
+          mergedMatches.push(existingMatch as {
+            info: {
+              gameCreation: number;
+              gameDuration: number;
+              gameMode: string;
+              participants: any[];
+            }
+          });
+        }
+      }
+    });
+    
+    // Sort matches by gameCreation (newest first) and limit to 20 matches
+    const sortedMatches = mergedMatches
+      .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
+      .slice(0, 20);
+    
     const cleanPlayerData = {
       gameName: playerInfo.gameName,
       tagLine: playerInfo.tagLine,
@@ -41,7 +118,6 @@ export default async function handler(
       accountId: summonerData.accountId,
       profileIconId: summonerData.profileIconId,
       summonerLevel: summonerData.summonerLevel,
-      /* eslint-disable @typescript-eslint/no-explicit-any */
       rankedInfo: rankedData.map((queue: any) => ({
         leagueId: queue.leagueId,
         queueType: queue.queueType === 'RANKED_SOLO_5x5' ? 'Solo/Duo' : 'Flex',
@@ -51,23 +127,7 @@ export default async function handler(
         wins: queue.wins,
         losses: queue.losses,
       })),
-      recentMatches: matchDetails.filter(Boolean).map(match => ({
-        info: {
-          gameCreation: match.info.gameCreation,
-          gameDuration: match.info.gameDuration,
-          gameMode: match.info.gameMode,
-          /* eslint-disable @typescript-eslint/no-explicit-any */
-          participants: match.info.participants.map((p: any) => ({
-            puuid: p.puuid,
-            championId: p.championId,
-            championName: p.championName,
-            kills: p.kills,
-            deaths: p.deaths,
-            assists: p.assists,
-            win: p.win,
-          }))
-        }
-      })),
+      recentMatches: sortedMatches,
       lastUpdated: new Date().toISOString()
     };
 
@@ -132,7 +192,7 @@ async function fetchRankedData(summonerId: string) {
 }
 
 async function fetchMatchDetails(puuid: string) {
-  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=5`;
+  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3`;
   const matchesResponse = await fetchWithRetry(matchesUrl);
   if (!matchesResponse.ok) return [];
   

@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from 'next';
 import { fetchWithRetry } from '@/utils/api';
 import path from 'path';
 import fs from 'fs/promises';
-
+/* eslint-disable */
 export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse

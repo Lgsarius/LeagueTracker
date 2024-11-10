@@ -1,0 +1,21 @@
+{
+  "name": "LostGames LoL Tracker",
+  "short_name": "LostGames",
+  "description": "Track and analyze LostGames League of Legends players performance in real-time.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#18181B",
+  "theme_color": "#18181B",
+  "icons": [
+    {
+      "src": "/LOGO.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/LOGO.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+} 

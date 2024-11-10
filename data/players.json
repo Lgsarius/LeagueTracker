@@ -525,7 +525,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:30.109Z"
+      "lastUpdated": "2024-11-10T21:59:20.218Z"
     },
     "DerLordIstDa": {
       "gameName": "DerLordIstDa",
@@ -1052,7 +1052,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:21.320Z"
+      "lastUpdated": "2024-11-10T21:59:18.580Z"
     },
     "der echte nini": {
       "gameName": "der echte nini",
@@ -2424,9 +2424,207 @@
               }
             ]
           }
+        },
+        {
+          "info": {
+            "gameCreation": 1731265034253,
+            "gameDuration": 1818,
+            "gameMode": "CLASSIC",
+            "participants": [
+              {
+                "puuid": "4NkyFftki-POelzKT_wDegRAGX2shDPZujqrIqZCWoHrlLynLMfkeY-PLRkYvr0DR8uIEsOKuF8PkA",
+                "championId": 133,
+                "championName": "Quinn",
+                "kills": 6,
+                "deaths": 5,
+                "assists": 5,
+                "win": false
+              },
+              {
+                "puuid": "K98QaDINRi7XPheuuFXhxYHMjofusln3jzT1XfFd9cMoMe06T3N9zaDQ2E7pBk4IvDkTAnEN5W_t2Q",
+                "championId": 24,
+                "championName": "Jax",
+                "kills": 4,
+                "deaths": 5,
+                "assists": 8,
+                "win": false
+              },
+              {
+                "puuid": "lmLaknC6BpkXriboPuO9CKv6s8Z1Fck0TC7PXHl2ETpXhSF3OqyRamKQHXL2dgfFFjr2gBKWO7wYAg",
+                "championId": 711,
+                "championName": "Vex",
+                "kills": 6,
+                "deaths": 10,
+                "assists": 3,
+                "win": false
+              },
+              {
+                "puuid": "m8zqh2j64gQqmcBinwhMl_xSx7FIltCOy5pLpdVPMQ4U_QV7jYIgOx3ClWrtMEB2vW4AmSH7Zq6PyQ",
+                "championId": 429,
+                "championName": "Kalista",
+                "kills": 7,
+                "deaths": 7,
+                "assists": 4,
+                "win": false
+              },
+              {
+                "puuid": "TXId_5N8Pu8QAfR7Pts4IsyDRlX-pwnr-SzAnlN4rIWkqTG6WHN3Pb1CIT6tMZTDFqZ3ZFX_rfJSqA",
+                "championId": 518,
+                "championName": "Neeko",
+                "kills": 1,
+                "deaths": 9,
+                "assists": 12,
+                "win": false
+              },
+              {
+                "puuid": "hl8JuI8DUzNwGpYEgtW6AR6FvB0cB07wanEdYfzaOsESxaWU01nnHI9KKkl6KGOe-9M0TfHVtXS6QQ",
+                "championId": 86,
+                "championName": "Garen",
+                "kills": 4,
+                "deaths": 5,
+                "assists": 3,
+                "win": true
+              },
+              {
+                "puuid": "1XjJiK7N2dikKkUX8bkAMl1jfaXpBJ66ijiYwEN8WWDiWJAXnrlp6AhrffLWnD-RqgDDUb37p1-cEQ",
+                "championId": 154,
+                "championName": "Zac",
+                "kills": 8,
+                "deaths": 3,
+                "assists": 16,
+                "win": true
+              },
+              {
+                "puuid": "zxIvBoBX6RJsL0gNibZ3ULWlNl5jWHsvYKPqHdnqRUyW9MQ8zWsxeKdBIKSwlPeWSGcCb1AqKO7XFA",
+                "championId": 517,
+                "championName": "Sylas",
+                "kills": 8,
+                "deaths": 10,
+                "assists": 8,
+                "win": true
+              },
+              {
+                "puuid": "rB2_yWykmFZqeLjCzgeamG5sA3nlm8XZSeqePKQAoff8ULhAw-j4zJrQMxZH9DJKs9VKb1Ugcq5__Q",
+                "championId": 22,
+                "championName": "Ashe",
+                "kills": 8,
+                "deaths": 4,
+                "assists": 8,
+                "win": true
+              },
+              {
+                "puuid": "Vhg_EHhSTHmbXffwK5u4FgNvdOXnMUfBrZ_8uzrYGQm5hRDkXKjyPimkgsp-FmHoO9dhB_k3pdW7hQ",
+                "championId": 223,
+                "championName": "TahmKench",
+                "kills": 7,
+                "deaths": 2,
+                "assists": 16,
+                "win": true
+              }
+            ]
+          }
+        },
+        {
+          "info": {
+            "gameCreation": 1731262366247,
+            "gameDuration": 1838,
+            "gameMode": "CLASSIC",
+            "participants": [
+              {
+                "puuid": "G5eejPjY35iQPjFBX7YkcbRFsHZqwADMxxsaKgKZBXtkEq8Vi7Nlwb0Hk0nomPNa1kt1cGKnzX-S9Q",
+                "championId": 126,
+                "championName": "Jayce",
+                "kills": 4,
+                "deaths": 6,
+                "assists": 10,
+                "win": true
+              },
+              {
+                "puuid": "gb9EFpx7gmGnfYCAWlx7EnJLTwjMtCAkhSOEpwfCUxBfetVdwqboOZ9F9VriCARn1QOhmFba4UbfTw",
+                "championId": 17,
+                "championName": "Teemo",
+                "kills": 15,
+                "deaths": 5,
+                "assists": 9,
+                "win": true
+              },
+              {
+                "puuid": "BDBm1o-pXZ6MlVuY_OTiK1Wukfc99H4kkX4UoZB8xyqh24vLkHqOnBWMD1yxfNjLJllEBj8uNkqGXg",
+                "championId": 136,
+                "championName": "AurelionSol",
+                "kills": 15,
+                "deaths": 2,
+                "assists": 12,
+                "win": true
+              },
+              {
+                "puuid": "rB2_yWykmFZqeLjCzgeamG5sA3nlm8XZSeqePKQAoff8ULhAw-j4zJrQMxZH9DJKs9VKb1Ugcq5__Q",
+                "championId": 145,
+                "championName": "Kaisa",
+                "kills": 10,
+                "deaths": 5,
+                "assists": 17,
+                "win": true
+              },
+              {
+                "puuid": "EYE9hiFgEaBXzaIY_dA8MtePZUJBJ5JJKJTidGNKQOpXoax0fXnay3iHJlVNmx-mXUbE1JgwhzejBw",
+                "championId": 53,
+                "championName": "Blitzcrank",
+                "kills": 5,
+                "deaths": 2,
+                "assists": 19,
+                "win": true
+              },
+              {
+                "puuid": "ZhWPmMEy3J-bAjeI6kc5PejI1QjiLmNDce2q66yJLKukP0K_4MFIrwoYQkU9f4ihy7rVPTGHSGBItg",
+                "championId": 58,
+                "championName": "Renekton",
+                "kills": 3,
+                "deaths": 6,
+                "assists": 2,
+                "win": false
+              },
+              {
+                "puuid": "ZXvFOsIObokTjRFWyJ1uS5UrniXl4hBgCd_c88B8_gTISOEhBTbl8gHzoiPGw1WrKJOeZyXCcyHo5g",
+                "championId": 64,
+                "championName": "LeeSin",
+                "kills": 5,
+                "deaths": 10,
+                "assists": 5,
+                "win": false
+              },
+              {
+                "puuid": "Wtry0IK2iv_Mu1GzyfTRqmyFQuZRobpbJGFXkyYz-RZn4pJQuDAFR07LdNDlS1zuWlwhLUla8UlDDQ",
+                "championId": 50,
+                "championName": "Swain",
+                "kills": 6,
+                "deaths": 11,
+                "assists": 1,
+                "win": false
+              },
+              {
+                "puuid": "5m3buJMK5qVWgceWaFNcJTiwQ_bAVIdPUndsXsV2iHlipqE9rGpfx1hrIh2WD5iG2nRSD2sT8HD39Q",
+                "championId": 15,
+                "championName": "Sivir",
+                "kills": 3,
+                "deaths": 10,
+                "assists": 7,
+                "win": false
+              },
+              {
+                "puuid": "5IOyRYKw3h5lNXz17OCGflePXgw0aCA1IXBax46yMH87gDeZjvQRlvAyyuCEbJIAKoHOlbpt3JlRXQ",
+                "championId": 99,
+                "championName": "Lux",
+                "kills": 3,
+                "deaths": 12,
+                "assists": 8,
+                "win": false
+              }
+            ]
+          }
         }
       ],
-      "lastUpdated": "2024-11-10T21:31:34.210Z"
+      "lastUpdated": "2024-11-10T21:59:22.432Z"
     },
     "Tobimax99": {
       "gameName": "Tobimax99",
@@ -2953,7 +3151,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:34.397Z"
+      "lastUpdated": "2024-11-10T21:59:22.684Z"
     },
     "Brayzevad": {
       "gameName": "Brayzevad",
@@ -3480,7 +3678,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:24.436Z"
+      "lastUpdated": "2024-11-10T21:59:18.934Z"
     },
     "TTT0b2": {
       "gameName": "TTT0b2",
@@ -3887,108 +4085,9 @@
               }
             ]
           }
-        },
-        {
-          "info": {
-            "gameCreation": 1731093640693,
-            "gameDuration": 1631,
-            "gameMode": "CLASSIC",
-            "participants": [
-              {
-                "puuid": "1E66FOlIoybsCWqXXMAlknCLqDs55Wx6UlQ7sAwvysnxo2c2PFnRXwZIwZFxUnrWfTSFTTQjhsVbEQ",
-                "championId": 799,
-                "championName": "Ambessa",
-                "kills": 1,
-                "deaths": 8,
-                "assists": 5,
-                "win": false
-              },
-              {
-                "puuid": "iS0-qaiFmhSBd26iyR9EFaZzoNTY_FvV-X068gzqD2ev6uDrU0ar006qFXwaYGsQh15UI6wA5TqE1A",
-                "championId": 64,
-                "championName": "LeeSin",
-                "kills": 12,
-                "deaths": 5,
-                "assists": 4,
-                "win": false
-              },
-              {
-                "puuid": "FXRZ8XYexEIXBS-oZjbX11YDUdDQvymyAnFMNlpmGf39mRXLFXgiDTYGoi-Xkf2T_2MuiiLgd_KBmg",
-                "championId": 777,
-                "championName": "Yone",
-                "kills": 5,
-                "deaths": 9,
-                "assists": 6,
-                "win": false
-              },
-              {
-                "puuid": "N1bp_Wk2X5hrJmzd0ioC-4ilIkE4U4AO_ulpkArDXYhfSNe3MNDIE_oXVlCpBzkga9DUGsOEmonDgA",
-                "championId": 145,
-                "championName": "Kaisa",
-                "kills": 7,
-                "deaths": 8,
-                "assists": 4,
-                "win": false
-              },
-              {
-                "puuid": "FEoqKrd_HrtKOnc5uoL2op67TOuyrZnyQuPTjpLwEdj_uMdGWF3KFN62qUvayzMh4qoUAyYvyoad4A",
-                "championId": 99,
-                "championName": "Lux",
-                "kills": 3,
-                "deaths": 6,
-                "assists": 3,
-                "win": false
-              },
-              {
-                "puuid": "1gl3naRFG2usCQRbqxx_sXd2XzeXhfDGK6oEqbYS8tyKRZKos9B3sK9VU-ossuRqBOQZ6nLWrJ0HeA",
-                "championId": 19,
-                "championName": "Warwick",
-                "kills": 8,
-                "deaths": 5,
-                "assists": 7,
-                "win": true
-              },
-              {
-                "puuid": "Apbp4lubuft5VfHf3tITjMZTZGR8v2ehA2o6145zS3UhQCQPB3IRBlYJ5SJYj0vQW-6zUJGV9BS6wA",
-                "championId": 799,
-                "championName": "Ambessa",
-                "kills": 8,
-                "deaths": 6,
-                "assists": 4,
-                "win": true
-              },
-              {
-                "puuid": "cBMDmlL8MktFu2dHtSLB8uPdBvUHooOsmbJV6a7zZSOo3cRiMDqKGqjUSoNP3WFAZJxPkbYH1uDCGg",
-                "championId": 84,
-                "championName": "Akali",
-                "kills": 7,
-                "deaths": 7,
-                "assists": 4,
-                "win": true
-              },
-              {
-                "puuid": "pQHwWgaqFfMWWTPf6CvtuQ-2wz9DvWSGGJIjWq-ldzQBRGWzqSVBQsGBVcxjL9PB5glADIypXePi3Q",
-                "championId": 51,
-                "championName": "Caitlyn",
-                "kills": 12,
-                "deaths": 6,
-                "assists": 4,
-                "win": true
-              },
-              {
-                "puuid": "1aGBdj8xxjmPRg_f96mMbrqqcTpw2Tpvt-2GfRJsTeWVlgdLCP_QjcaB6_OmI4FyCTdscT2Q8blHqQ",
-                "championId": 143,
-                "championName": "Zyra",
-                "kills": 1,
-                "deaths": 4,
-                "assists": 10,
-                "win": true
-              }
-            ]
-          }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:18.771Z"
+      "lastUpdated": "2024-11-10T21:59:22.313Z"
     },
     "Laura K": {
       "gameName": "Laura K",
@@ -4395,108 +4494,9 @@
               }
             ]
           }
-        },
-        {
-          "info": {
-            "gameCreation": 1731100203411,
-            "gameDuration": 2195,
-            "gameMode": "CLASSIC",
-            "participants": [
-              {
-                "puuid": "1gl3naRFG2usCQRbqxx_sXd2XzeXhfDGK6oEqbYS8tyKRZKos9B3sK9VU-ossuRqBOQZ6nLWrJ0HeA",
-                "championId": 19,
-                "championName": "Warwick",
-                "kills": 7,
-                "deaths": 17,
-                "assists": 10,
-                "win": true
-              },
-              {
-                "puuid": "Apbp4lubuft5VfHf3tITjMZTZGR8v2ehA2o6145zS3UhQCQPB3IRBlYJ5SJYj0vQW-6zUJGV9BS6wA",
-                "championId": 799,
-                "championName": "Ambessa",
-                "kills": 9,
-                "deaths": 6,
-                "assists": 11,
-                "win": true
-              },
-              {
-                "puuid": "pQHwWgaqFfMWWTPf6CvtuQ-2wz9DvWSGGJIjWq-ldzQBRGWzqSVBQsGBVcxjL9PB5glADIypXePi3Q",
-                "championId": 45,
-                "championName": "Veigar",
-                "kills": 5,
-                "deaths": 10,
-                "assists": 11,
-                "win": true
-              },
-              {
-                "puuid": "rF4MNaxmi027VphflmSn_bjP-ig9LQ7vx_ML_ri_LHnwa0EmBhBzO8OrkkxI5aiWf2Uw71pDoNBpZA",
-                "championId": 202,
-                "championName": "Jhin",
-                "kills": 15,
-                "deaths": 8,
-                "assists": 9,
-                "win": true
-              },
-              {
-                "puuid": "yIbq5M1DYpD3VrKaPzEdSgFNgzXNg3XkIloacHDsPOCaKHssD01PSaoKGGDJ95BWhZlRUwiEivWMjA",
-                "championId": 25,
-                "championName": "Morgana",
-                "kills": 2,
-                "deaths": 4,
-                "assists": 23,
-                "win": true
-              },
-              {
-                "puuid": "54NhYCRFjIOLZfTU4Wd20cxbkSmT5Wj1BNWnKg0kL8wnsmT1VDUDInn8g7Uz8ncISw8HuI9-JnwmTw",
-                "championId": 799,
-                "championName": "Ambessa",
-                "kills": 19,
-                "deaths": 7,
-                "assists": 5,
-                "win": false
-              },
-              {
-                "puuid": "BDRpnLiHgVtdcIRPCZR1uwQeMLVb9Xlt0dABh6yAez11gNQ-IM9artBp4XLX56bHAhMB7l4tfCDhaw",
-                "championId": 98,
-                "championName": "Shen",
-                "kills": 7,
-                "deaths": 5,
-                "assists": 14,
-                "win": false
-              },
-              {
-                "puuid": "RRrd0Z8XZ1A486-PNGdym20Ne8JMeFeLdNgAyL6spkmkZ6Yqb120zvuEpVpR_Z6J_ObCKR12GCaIyQ",
-                "championId": 134,
-                "championName": "Syndra",
-                "kills": 8,
-                "deaths": 9,
-                "assists": 10,
-                "win": false
-              },
-              {
-                "puuid": "xSEnW-30sS7VfBkBMwzGQZfb5U2pCtP_8_4An123I0-XWa62tSTmX-KxuwOVaz9sbAye_oFqoxLaTg",
-                "championId": 222,
-                "championName": "Jinx",
-                "kills": 10,
-                "deaths": 10,
-                "assists": 10,
-                "win": false
-              },
-              {
-                "puuid": "6boUqFJ9Jie1yy3o41BAY2DsB3lv5zQSlfJxwfQk4ScKBp9nB_s8ggkbCY21AwsOjaNDVvDaHUDEdQ",
-                "championId": 412,
-                "championName": "Thresh",
-                "kills": 1,
-                "deaths": 7,
-                "assists": 21,
-                "win": false
-              }
-            ]
-          }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:20.878Z"
+      "lastUpdated": "2024-11-10T21:59:22.252Z"
     },
     "LG Jacktus": {
       "gameName": "LG Jacktus",
@@ -5004,7 +5004,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:18.816Z"
+      "lastUpdated": "2024-11-10T21:59:20.232Z"
     },
     "ScaredOfWomen": {
       "gameName": "ScaredOfWomen",
@@ -5522,7 +5522,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:22.731Z"
+      "lastUpdated": "2024-11-10T21:59:24.732Z"
     },
     "DerJauler": {
       "gameName": "DerJauler",
@@ -6030,7 +6030,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:18.854Z"
+      "lastUpdated": "2024-11-10T21:59:20.190Z"
     },
     "Eiche aus Kassel": {
       "gameName": "Eiche aus Kassel",
@@ -6548,7 +6548,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:18.793Z"
+      "lastUpdated": "2024-11-10T21:59:17.139Z"
     },
     "Ophois": {
       "gameName": "Ophois",
@@ -7075,7 +7075,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:57:22.920Z"
+      "lastUpdated": "2024-11-10T21:59:24.861Z"
     },
     "MiauzGenau9": {
       "gameName": "MiauzGenau9",

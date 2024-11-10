@@ -1052,7 +1052,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:49:28.087Z"
+      "lastUpdated": "2024-11-10T21:57:21.320Z"
     },
     "der echte nini": {
       "gameName": "der echte nini",
@@ -1579,7 +1579,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:34.450Z"
+      "lastUpdated": "2024-11-10T21:57:24.597Z"
     },
     "ColaZero": {
       "gameName": "ColaZero",
@@ -2097,7 +2097,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:34.372Z"
+      "lastUpdated": "2024-11-10T21:57:22.547Z"
     },
     "LGay Der Bi mbus": {
       "gameName": "LGay Der Bi mbus",
@@ -3480,7 +3480,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:49:31.294Z"
+      "lastUpdated": "2024-11-10T21:57:24.436Z"
     },
     "TTT0b2": {
       "gameName": "TTT0b2",
@@ -3988,7 +3988,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:31.914Z"
+      "lastUpdated": "2024-11-10T21:57:18.771Z"
     },
     "Laura K": {
       "gameName": "Laura K",
@@ -4496,7 +4496,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:49:37.591Z"
+      "lastUpdated": "2024-11-10T21:57:20.878Z"
     },
     "LG Jacktus": {
       "gameName": "LG Jacktus",
@@ -5004,7 +5004,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:31.899Z"
+      "lastUpdated": "2024-11-10T21:57:18.816Z"
     },
     "ScaredOfWomen": {
       "gameName": "ScaredOfWomen",
@@ -5522,7 +5522,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:32.345Z"
+      "lastUpdated": "2024-11-10T21:57:22.731Z"
     },
     "DerJauler": {
       "gameName": "DerJauler",
@@ -6030,7 +6030,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:31.888Z"
+      "lastUpdated": "2024-11-10T21:57:18.854Z"
     },
     "Eiche aus Kassel": {
       "gameName": "Eiche aus Kassel",
@@ -6147,6 +6147,105 @@
                 "deaths": 9,
                 "assists": 28,
                 "win": false
+              }
+            ]
+          }
+        },
+        {
+          "info": {
+            "gameCreation": 1729342348819,
+            "gameDuration": 1465,
+            "gameMode": "CLASSIC",
+            "participants": [
+              {
+                "puuid": "sbhYRb7mFK7geRlmYvx8D1PbrV5tkLHEfxiqaXFMOAWdivPMHK1hSdbCA3FzbTQ6AS4xjjAHtHNOVQ",
+                "championId": 78,
+                "championName": "Poppy",
+                "kills": 3,
+                "deaths": 4,
+                "assists": 4,
+                "win": false
+              },
+              {
+                "puuid": "NtnrVeVFEzXur57YZVtLr9Yp5U3Rys7VIs5BP3mO32lTSII0i1nUYJvjCg0Sd_cBqBLXi1Q2CeW2WA",
+                "championId": 32,
+                "championName": "Amumu",
+                "kills": 2,
+                "deaths": 9,
+                "assists": 8,
+                "win": false
+              },
+              {
+                "puuid": "o2c-GX9pHxlz9GLNhdgKyWBVHvZB6cF7OVJsmZVg3Qe87NPD04s2oithfVuNgz3yW0AuWQYSe9Y7BA",
+                "championId": 711,
+                "championName": "Vex",
+                "kills": 4,
+                "deaths": 9,
+                "assists": 4,
+                "win": false
+              },
+              {
+                "puuid": "2QGb10-_mwUtsmDUBLcU-YF4lrfWMib2qPB1tKZyBsyfKivJ6JC_T8Z4SHSX5oxzRwofQbqer3MCJg",
+                "championId": 145,
+                "championName": "Kaisa",
+                "kills": 13,
+                "deaths": 4,
+                "assists": 5,
+                "win": false
+              },
+              {
+                "puuid": "aH22UoBxWqE57ifr3AxygiNeAWjTayRxybjq675HO8YO3eJ3-GIYjYCn2HQKfthIcP5qpGIw8ibiqw",
+                "championId": 111,
+                "championName": "Nautilus",
+                "kills": 3,
+                "deaths": 8,
+                "assists": 10,
+                "win": false
+              },
+              {
+                "puuid": "ZqXyDQJRCxPjhqEpHJY8orl4uoaCfQD89c7T2ixL-OAgW_II1OZqNo74huS6iS0YCBVKQTQdM9dI2g",
+                "championId": 74,
+                "championName": "Heimerdinger",
+                "kills": 7,
+                "deaths": 4,
+                "assists": 7,
+                "win": true
+              },
+              {
+                "puuid": "zixpxqOhIOQXAhnjiRlUfFz5PdwX9ANLHhJYW4mR1WAv9I0j7-flA6cGP5qMqHWMwi1vtvulEWvrDw",
+                "championId": 59,
+                "championName": "JarvanIV",
+                "kills": 8,
+                "deaths": 5,
+                "assists": 14,
+                "win": true
+              },
+              {
+                "puuid": "A1et0zGVhRC3lyW01HFCyUBHP88AXlvIpj_WOb8QODxPZr4rzw2rtSPlXHwdMybTywV__5nutn84nQ",
+                "championId": 517,
+                "championName": "Sylas",
+                "kills": 6,
+                "deaths": 5,
+                "assists": 12,
+                "win": true
+              },
+              {
+                "puuid": "yy8-OXykbhTPr6Lk6yd4qDiAXLuTDvDyhF_bq7jepscUdnUFxNfTWiVTZvIwuCBAkQ0GaTNSitQqMg",
+                "championId": 51,
+                "championName": "Caitlyn",
+                "kills": 13,
+                "deaths": 6,
+                "assists": 8,
+                "win": true
+              },
+              {
+                "puuid": "3JAFFWhlcmJMF4lekXIagjrjytTFBWOBdycT7_kXdtJAMlGQMqSi37YFllEA1Seki0gzqGicZUoQlQ",
+                "championId": 526,
+                "championName": "Rell",
+                "kills": 0,
+                "deaths": 6,
+                "assists": 17,
+                "win": true
               }
             ]
           }
@@ -6449,7 +6548,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:32.890Z"
+      "lastUpdated": "2024-11-10T21:57:18.793Z"
     },
     "Ophois": {
       "gameName": "Ophois",
@@ -6976,7 +7075,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:48:29.975Z"
+      "lastUpdated": "2024-11-10T21:57:22.920Z"
     },
     "MiauzGenau9": {
       "gameName": "MiauzGenau9",
@@ -7494,7 +7593,7 @@
           }
         }
       ],
-      "lastUpdated": "2024-11-10T21:46:34.282Z"
+      "lastUpdated": "2024-11-10T21:57:24.240Z"
     }
   }
 }

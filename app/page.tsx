@@ -7,6 +7,7 @@ import { PlayerData } from '@/types/player';
 import playerData from '@/data/players.json';
 import summonerTags from '@/data/summoner-tags.json';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
@@ -245,22 +246,34 @@ export default function HomePage() {
           mb={50}
         >
           <Group justify="space-between" align="flex-start">
-            <Box>
-              <Title 
-                order={1}
-                size={48}
-                fw={900}
-                variant="gradient"
-              >
-                LostGames LoL Tracker
-              </Title>
-              <Text c="dimmed" mt="md" size="xl" maw={600}>
-                Alle LostGames LoL Spieler
-              </Text>
-              <Text c="dimmed.4" mt="sm" size="md">
-                Aktuelle Anzahl an Accounts: {players.length}
-              </Text>
-            </Box>
+            <Group align="center" gap="md">
+              <Image 
+                src="/LOGO.png"
+                alt="LostGames Logo"
+                width={80}
+                height={80}
+                style={{
+                  borderRadius: '50%',
+                  objectFit: 'cover',
+                }}
+              />
+              <Box>
+                <Title 
+                  order={1}
+                  size={48}
+                  fw={900}
+                  variant="gradient"
+                >
+                  LostGames LoL Tracker
+                </Title>
+                <Text c="dimmed" mt="md" size="xl" maw={600}>
+                  Alle LostGames LoL Spieler
+                </Text>
+                <Text c="dimmed.4" mt="sm" size="md">
+                  Aktuelle Anzahl an Accounts: {players.length}
+                </Text>
+              </Box>
+            </Group>
           </Group>
         </Paper>
 

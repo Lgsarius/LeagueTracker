@@ -254,9 +254,14 @@ const MatchHistoryPreview = ({ matches, puuid }: { matches: any[], puuid: string
                       />
                       <Stack gap={0}>
                         <Text size="sm">{participant.championName}</Text>
-                        <Text size="xs" c="dimmed">
-                          {formatDistanceToNow(new Date(match.info.gameCreation))} ago
-                        </Text>
+                        <Stack gap={0}>
+                          <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
+                            {formatDistanceToNow(new Date(match.info.gameCreation))} ago
+                          </Text>
+                          <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
+                            {getReadableGameMode(match.info.gameMode)}
+                          </Text>
+                        </Stack>
                       </Stack>
                     </Group>
                     <Stack gap={2} justify="flex-end">
@@ -537,6 +542,24 @@ const StatusLabel = ({ type }: { type: 'fire' | 'tilt' }) => (
     </Text>
   </motion.div>
 );
+
+// Add this helper function
+const getReadableGameMode = (gameMode: string): string => {
+  switch (gameMode) {
+    case 'CLASSIC':
+      return 'Ranked/Normal';
+    case 'ARAM':
+      return 'ARAM';
+    case 'URF':
+      return 'URF';
+    case 'PRACTICETOOL':
+      return 'Practice';
+    case 'TUTORIAL':
+      return 'Tutorial';
+    default:
+      return gameMode;
+  }
+};
 
 export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer, isLoading }: PlayerListProps) {
   const [compareModalOpen, setCompareModalOpen] = useState(false);

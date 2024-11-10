@@ -48,7 +48,7 @@ const INTERACTIVE_CARD_STYLES = {
 // Add at the top with other constants
 const ALERT_THRESHOLD_LOSSES = 3;
 const ALERT_THRESHOLD_KDA = 1.0;
-const GAMES_24H_THRESHOLD = 7;
+const GAMES_24H_THRESHOLD = 5;
 const MATCH_PREVIEW_COUNT = 5;
 
 // Add this new component for the animated alert

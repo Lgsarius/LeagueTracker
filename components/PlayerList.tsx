@@ -842,21 +842,23 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                             background: queue.tier === 'IRON' 
                               ? `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7mz3iLydD6sk14wva3SIld4dGKruvT7JBz5mWGabCHJ2C3_n8ta7KVWfebATQNlwwSpM&usqp=CAU') center/cover`
                               : queue.tier === 'BRONZE'
-                              ? 'linear-gradient(45deg, #cd7f32, #8B4513)'
+                              ? 'linear-gradient(45deg, #95604c, #6e4b3c)'
                               : queue.tier === 'SILVER'
-                              ? 'linear-gradient(45deg, #C0C0C0, #808080)'
+                              ? 'linear-gradient(45deg, #a1b5c7, #7b8792)'
                               : queue.tier === 'GOLD'
-                              ? 'linear-gradient(45deg, #FFD700, #DAA520)'
+                              ? 'linear-gradient(45deg, #f1c859, #c89b3c)'
                               : queue.tier === 'PLATINUM'
-                              ? 'linear-gradient(45deg, #00ff9f, #008B8B)'
+                              ? 'linear-gradient(45deg, #00a0b0, #008891)'
+                              : queue.tier === 'EMERALD'
+                              ? 'linear-gradient(45deg, #16a75c, #0d7740)'
                               : queue.tier === 'DIAMOND'
-                              ? 'linear-gradient(45deg, #b9f2ff, #4169E1)'
+                              ? 'linear-gradient(45deg, #576ace, #1f42b5)'
                               : queue.tier === 'MASTER'
-                              ? 'linear-gradient(45deg, #9370db, #800080)'
+                              ? 'linear-gradient(45deg, #9d48e0, #6925af)'
                               : queue.tier === 'GRANDMASTER'
-                              ? 'linear-gradient(45deg, #ff4e50, #8B0000)'
+                              ? 'linear-gradient(45deg, #e0484e, #a91419)'
                               : queue.tier === 'CHALLENGER'
-                              ? 'linear-gradient(45deg, #00ccff, #0000CD)'
+                              ? 'linear-gradient(45deg, #39b7ff, #0d6fb8)'
                               : undefined,
                             border: queue.tier === 'IRON' ? '1px solid #724b28' : undefined,
                             color: '#fff',
@@ -864,7 +866,6 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                             padding: '4px 8px',
                             fontWeight: 600,
                             letterSpacing: '0.5px',
-                           
                           }}
                           size="sm"
                         >

@@ -1,9 +1,12 @@
-import { SimpleGrid, Paper, Text, Group, Avatar, Badge, Button, Tooltip, Stack, Select } from '@mantine/core';
-import { IconChevronRight, IconSkull, IconClock, IconRefresh, IconUserPlus } from '@tabler/icons-react';
+/* eslint-disable */
+import { SimpleGrid, Paper, Text, Group, Avatar, Badge, Button, Tooltip, Stack, Select} from '@mantine/core';
+import { IconChevronRight, IconSkull, IconClock, IconRefresh, IconUserPlus, IconChevronDown, IconChevronUp, IconHistory } from '@tabler/icons-react';
 import { PlayerData } from '@/types/player';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useMemo } from 'react';
 import { CompareModal } from './CompareModal';
+import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
+import { differenceInHours } from 'date-fns';
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -14,17 +17,39 @@ interface PlayerListProps {
   isLoading: boolean;
 }
 
-// Add these style constants at the top of the file
+// Update the CARD_STYLES constant
 const CARD_STYLES = {
   border: '1px solid #ffffff10',
-  backdropFilter: 'blur(4px)',
+  backdropFilter: 'blur(8px)',
   backgroundColor: 'rgba(255, 255, 255, 0.03)',
+  position: 'relative' as const,
+  overflow: 'hidden' as const,
+  '&::before': {
+    content: '""',
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    height: '2px',
+    background: 'linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent)',
+  },
+};
+
+// Add a new style for hover effects
+const INTERACTIVE_CARD_STYLES = {
+  ...CARD_STYLES,
+  transition: 'transform 0.2s, box-shadow 0.2s',
+  '&:hover': {
+    transform: 'translateY(-2px)',
+    boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+  },
 };
 
 // Add at the top with other constants
 const ALERT_THRESHOLD_LOSSES = 3;
 const ALERT_THRESHOLD_KDA = 1.0;
 const GAMES_24H_THRESHOLD = 5;
+const MATCH_PREVIEW_COUNT = 3;
 
 // Add this new component for the animated alert
 const AnimatedAlert = ({ type }: { type: 'tilt' | 'hobbylos' }) => {
@@ -176,6 +201,188 @@ const getSoloQueueRank = (player: PlayerData) => {
   return (tierValue * 10000) + (rankValue * 100) + lpValue;
 };
 
+const MatchHistoryPreview = ({ matches, puuid }: { matches: any[], puuid: string }) => {
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  return (
+    <Paper mt="md" p="md" radius="md" style={CARD_STYLES}>
+      <Group justify="space-between" mb={isExpanded ? "md" : 0}>
+        <Group gap={8}>
+          <IconHistory size={16} />
+          <Text size="sm" fw={500}>Match History</Text>
+        </Group>
+        <Button 
+          variant="subtle" 
+          size="xs" 
+          onClick={() => setIsExpanded(!isExpanded)}
+          rightSection={isExpanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
+        >
+          {isExpanded ? 'Hide' : 'Show'}
+        </Button>
+      </Group>
+      
+      <AnimatePresence>
+        {isExpanded && (
+          <motion.div
+            initial={{ height: 0, opacity: 0 }}
+            animate={{ height: 'auto', opacity: 1 }}
+            exit={{ height: 0, opacity: 0 }}
+          >
+            {matches?.slice(0, MATCH_PREVIEW_COUNT).map((match, idx) => {
+              const participant = match.info.participants.find((p: any) => p.puuid === puuid);
+              if (!participant) return null;
+              
+              return (
+                <Paper 
+                  key={idx} 
+                  p="sm" 
+                  mb={8} 
+                  radius="md"
+                  style={{
+                    ...CARD_STYLES,
+                    backgroundColor: participant.win 
+                      ? 'rgba(76, 175, 80, 0.1)' 
+                      : 'rgba(244, 67, 54, 0.1)',
+                  }}
+                >
+                  <Group justify="space-between">
+                    <Group gap={8}>
+                      <Avatar
+                        size={32}
+                        src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${participant.championName}.png`}
+                        radius="sm"
+                      />
+                      <Stack gap={0}>
+                        <Text size="sm">{participant.championName}</Text>
+                        <Text size="xs" c="dimmed">
+                          {formatDistanceToNow(new Date(match.info.gameCreation))} ago
+                        </Text>
+                      </Stack>
+                    </Group>
+                    <Stack gap={2} justify="flex-end">
+                      <Text size="sm" fw={600} c={participant.win ? 'teal' : 'red'}>
+                        {participant.kills}/{participant.deaths}/{participant.assists}
+                      </Text>
+                      <Text size="xs" c={participant.win ? 'teal' : 'red'}>
+                        {participant.win ? 'Victory' : 'Defeat'}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Paper>
+              );
+            })}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </Paper>
+  );
+};
+
+// Add this new component
+const StatBox = ({ label, value, color }: { label: string; value: string | number; color?: string }) => (
+  <Paper p={8} radius="md" style={CARD_STYLES}>
+    <Stack align="center" gap={2}>
+      <Text size="xs" c="dimmed">{label}</Text>
+      <Text size="sm" fw={700} c={color}>
+        {value}
+      </Text>
+    </Stack>
+  </Paper>
+);
+
+// Add this new component
+const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
+  const getStatusInfo = (lastGameTime: Date | null) => {
+    if (!lastGameTime) return {
+      color: 'gray',
+      label: 'No recent games',
+      dotAnimation: false
+    };
+
+    const hoursSince = differenceInHours(new Date(), lastGameTime);
+    
+    if (hoursSince < 1) return {
+      color: 'green',
+      label: 'Recently active',
+      dotAnimation: true
+    };
+    
+    if (hoursSince < 3) return {
+      color: 'yellow',
+      label: formatDistanceToNow(lastGameTime, { addSuffix: true }),
+      dotAnimation: true
+    };
+    
+    if (hoursSince < 24) return {
+      color: 'orange',
+      label: formatDistanceToNow(lastGameTime, { addSuffix: true }),
+      dotAnimation: false
+    };
+    
+    return {
+      color: 'red',
+      label: formatDistanceToNow(lastGameTime, { addSuffix: true }),
+      dotAnimation: false
+    };
+  };
+
+  const status = getStatusInfo(lastGameTime);
+
+  return (
+    <Paper 
+      mt="xs"
+      p="xs" 
+      radius="md" 
+      style={{
+        ...CARD_STYLES,
+        backgroundColor: 'rgba(0, 0, 0, 0.2)'
+      }}
+    >
+      <Group gap={8} align="center">
+        <motion.div
+          animate={status.dotAnimation ? {
+            scale: [1, 1.2, 1],
+            opacity: [1, 0.7, 1]
+          } : {}}
+          transition={{
+            duration: 2,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          style={{
+            width: 8,
+            height: 8,
+            borderRadius: '50%',
+            backgroundColor: `var(--mantine-color-${status.color}-6)`,
+            boxShadow: `0 0 8px var(--mantine-color-${status.color}-6)`
+          }}
+        />
+        <Group gap={4} align="center">
+          <Text 
+            size="xs" 
+            fw={500}
+            style={{ 
+              color: `var(--mantine-color-${status.color}-4)`,
+              textShadow: '0 0 10px rgba(0,0,0,0.3)'
+            }}
+          >
+            {status.label}
+          </Text>
+          {lastGameTime && (
+            <Tooltip 
+              label={new Date(lastGameTime).toLocaleString()} 
+              position="right"
+            >
+              <Text size="xs" c="dimmed" style={{ cursor: 'help' }}>
+                ({formatDistanceToNow(lastGameTime, { addSuffix: true })})
+              </Text>
+            </Tooltip>
+          )}
+        </Group>
+      </Group>
+    </Paper>
+  );
+};
 
 export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer, isLoading }: PlayerListProps) {
   const [compareModalOpen, setCompareModalOpen] = useState(false);
@@ -221,6 +428,27 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
     });
   }, [players, sortBy]);
 
+  const playerStats = useMemo(() => {
+    if (!players) return {};
+    
+    return players.reduce((acc, player) => {
+      const recentMatches = player.recentMatches?.slice(0, 5);
+      const stats = recentMatches?.reduce((matchAcc, match) => {
+        const playerStats = match.info.participants.find(
+          p => p.puuid === player.summoner.puuid
+        );
+        if (playerStats) {
+          matchAcc.kills += playerStats.kills;
+          matchAcc.deaths += playerStats.deaths;
+        }
+        return matchAcc;
+      }, { kills: 0, deaths: 0 });
+
+      acc[player.summoner.puuid] = stats || { kills: 0, deaths: 0 };
+      return acc;
+    }, {} as Record<string, { kills: number; deaths: number }>);
+  }, [players]);
+
 
 
   console.log('Players received:', players);
@@ -264,6 +492,20 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
       minute: '2-digit',
       second: '2-digit'
     }).format(date);
+  };
+
+  // Add near other helper functions
+  const getLastGameTime = (player: PlayerData) => {
+    if (!player.recentMatches?.[0]) return null;
+    return new Date(player.recentMatches[0].info.gameCreation);
+  };
+
+  const getStatusColor = (lastGameTime: Date | null) => {
+    if (!lastGameTime) return 'gray';
+    const hoursSinceLastGame = (Date.now() - lastGameTime.getTime()) / (1000 * 60 * 60);
+    if (hoursSinceLastGame < 1) return 'green';
+    if (hoursSinceLastGame < 3) return 'yellow';
+    return 'gray';
   };
 
   return (
@@ -332,7 +574,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
             key={`player-${player.summoner.name}-${index}`}
             radius="md"
             p="md"
-            style={CARD_STYLES}
+            style={INTERACTIVE_CARD_STYLES}
           >
             <Group wrap="nowrap" mb="xs">
               <Avatar
@@ -448,9 +690,73 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
             ) : (
               <Text size="xs" c="dimmed" ta="center">Unranked</Text>
             )}
+
+            {/* Enhanced K/D display with tooltip */}
+            <Tooltip
+              multiline
+              position="bottom"
+              label={
+                <Stack gap="xs">
+                  <Text size="xs" fw={500}>Last {player.recentMatches?.length || 0} Games:</Text>
+                  <Group gap="xs">
+                    <Stack gap={2}>
+                      <Text size="xs" c="dimmed">Total Kills:</Text>
+                      <Text size="xs" c="dimmed">Total Deaths:</Text>
+                      <Text size="xs" c="dimmed">KD Ratio:</Text>
+                    </Stack>
+                    <Stack gap={2}>
+                      <Text size="xs">{playerStats[player.summoner.puuid]?.kills || 0}</Text>
+                      <Text size="xs">{playerStats[player.summoner.puuid]?.deaths || 0}</Text>
+                      <Text size="xs">
+                        {((playerStats[player.summoner.puuid]?.kills || 0) / 
+                          Math.max(playerStats[player.summoner.puuid]?.deaths || 1, 1)).toFixed(2)}
+                      </Text>
+                    </Stack>
+                  </Group>
+                </Stack>
+              }
+            >
+              <Paper
+                mt="xs"
+                p="xs"
+                radius="sm"
+                style={{
+                  ...CARD_STYLES,
+                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                  cursor: 'help'
+                }}
+              >
+                <Group justify="center" gap="xs">
+                  <Group gap={4}>
+                    <Text size="xs" fw={600} c="teal.4">
+                      {playerStats[player.summoner.puuid]?.kills || 0}
+                    </Text>
+                    <Text size="xs" c="dimmed">kills</Text>
+                  </Group>
+                  <Text size="xs" c="dimmed">/</Text>
+                  <Group gap={4}>
+                    <Text size="xs" fw={600} c="red.4">
+                      {playerStats[player.summoner.puuid]?.deaths || 0}
+                    </Text>
+                    <Text size="xs" c="dimmed">deaths</Text>
+                  </Group>
+                </Group>
+              </Paper>
+            </Tooltip>
+
+            {player.recentMatches && (
+              <MatchHistoryPreview 
+                matches={player.recentMatches} 
+                puuid={player.summoner.puuid} 
+              />
+            )}
+
+            <StatusIndicator lastGameTime={getLastGameTime(player)} />
           </Paper>
         ))}
       </SimpleGrid>
+
+     
     </>
   );
 }

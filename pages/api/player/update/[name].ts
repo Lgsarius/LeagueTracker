@@ -132,7 +132,7 @@ async function fetchRankedData(summonerId: string) {
 }
 
 async function fetchMatchDetails(puuid: string) {
-  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3`;
+  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=5`;
   const matchesResponse = await fetchWithRetry(matchesUrl);
   if (!matchesResponse.ok) return [];
   

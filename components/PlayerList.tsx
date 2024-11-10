@@ -48,8 +48,8 @@ const INTERACTIVE_CARD_STYLES = {
 // Add at the top with other constants
 const ALERT_THRESHOLD_LOSSES = 3;
 const ALERT_THRESHOLD_KDA = 1.0;
-const GAMES_24H_THRESHOLD = 5;
-const MATCH_PREVIEW_COUNT = 3;
+const GAMES_24H_THRESHOLD = 7;
+const MATCH_PREVIEW_COUNT = 5;
 
 // Add this new component for the animated alert
 const AnimatedAlert = ({ type }: { type: 'tilt' | 'hobbylos' }) => {
@@ -384,6 +384,160 @@ const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
   );
 };
 
+// Enhanced RainEffect with lightning and better droplets
+const RainEffect = () => (
+  <>
+    {/* Rain droplets */}
+    <motion.div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        overflow: 'hidden',
+        pointerEvents: 'none',
+        zIndex: 10,
+        background: 'rgba(0, 0, 0, 0.1)',
+      }}
+    >
+      {Array.from({ length: 40 }).map((_, i) => (
+        <motion.div
+          key={`rain-${i}`}
+          style={{
+            position: 'absolute',
+            background: 'linear-gradient(180deg, rgba(176, 224, 230, 0.8), rgba(176, 224, 230, 0.4))',
+            width: '2px',
+            height: `${10 + Math.random() * 20}px`,
+            filter: 'blur(1px)',
+            boxShadow: '0 0 4px rgba(176, 224, 230, 0.5)',
+          }}
+          initial={{
+            left: `${Math.random() * 100}%`,
+            top: -20,
+            opacity: 0.8,
+          }}
+          animate={{
+            y: ['0%', '800%'],
+            opacity: [0.8, 0.3],
+          }}
+          transition={{
+            duration: 0.8 + Math.random() * 0.5,
+            repeat: Infinity,
+            delay: Math.random() * 2,
+            ease: 'linear',
+          }}
+        />
+      ))}
+    </motion.div>
+
+    {/* Lightning effect */}
+    <motion.div
+      style={{
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        pointerEvents: 'none',
+        zIndex: 11,
+        background: 'rgba(255, 255, 255, 0)',
+      }}
+      animate={{
+        background: [
+          'rgba(255, 255, 255, 0)',
+          'rgba(255, 255, 255, 0.1)',
+          'rgba(255, 255, 255, 0)',
+        ],
+      }}
+      transition={{
+        duration: 0.2,
+        repeat: Infinity,
+        repeatDelay: Math.random() * 5 + 3,
+        ease: 'easeInOut',
+      }}
+    />
+  </>
+);
+
+// Enhanced BurningBorder with more realistic flames
+const BurningBorder = () => (
+  <motion.div
+    style={{
+      position: 'absolute',
+      top: 0,
+      left: 0,
+      right: 0,
+      bottom: 0,
+      pointerEvents: 'none',
+      border: '2px solid transparent',
+      borderRadius: 'inherit',
+      background: 'linear-gradient(45deg, rgba(255, 77, 0, 0.4), rgba(255, 215, 0, 0.4)) border-box',
+      WebkitMask: 'linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0)',
+      WebkitMaskComposite: 'destination-out',
+      maskComposite: 'exclude',
+      boxShadow: 'inset 0 0 10px rgba(255, 77, 0, 0.3)',
+      zIndex: 1,
+    }}
+    animate={{
+      opacity: [0.6, 1, 0.6],
+    }}
+    transition={{
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    }}
+  />
+);
+
+// Add this helper function
+const hasWinStreak = (player: PlayerData) => {
+  if (!player.recentMatches || player.recentMatches.length < 3) return false;
+  
+  const recentMatches = player.recentMatches.slice(0, 3);
+  return recentMatches.every(match => {
+    const participant = match.info.participants.find(p => p.puuid === player.summoner.puuid);
+    return participant?.win;
+  });
+};
+
+const StatusLabel = ({ type }: { type: 'fire' | 'tilt' }) => (
+  <motion.div
+    style={{
+      position: 'absolute',
+      top: -12,
+      right: 20,
+      background: type === 'fire' 
+        ? 'linear-gradient(45deg, #ff4d00, #ffd700)'
+        : 'linear-gradient(45deg, #2c3e50, #3498db)',
+      padding: '4px 12px',
+      borderRadius: '12px',
+      boxShadow: `0 2px 10px ${type === 'fire' ? 'rgba(255, 77, 0, 0.3)' : 'rgba(44, 62, 80, 0.3)'}`,
+      zIndex: 20,
+    }}
+    animate={{
+      y: [0, -2, 0],
+    }}
+    transition={{
+      duration: 2,
+      repeat: Infinity,
+      ease: 'easeInOut',
+    }}
+  >
+    <Text 
+      size="xs" 
+      fw={700}
+      c="white" 
+      style={{ 
+        textShadow: '0 1px 2px rgba(0,0,0,0.3)',
+        letterSpacing: '0.5px'
+      }}
+    >
+      {type === 'fire' ? '🔥 ON FIRE' : '💧 BRUCH'}
+    </Text>
+  </motion.div>
+);
+
 export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer, isLoading }: PlayerListProps) {
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('rank');
@@ -531,7 +685,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
       <Paper p="md" radius="md" mb="lg" style={CARD_STYLES}>
         <Group justify="space-between">
           <Group>
-            <Text size="lg" fw={600} c="dimmed">Active Players</Text>
+            <Text size="lg" fw={600} c="dimmed">Geladene Spieler</Text>
             <Badge size="md" variant="filled" color="blue">{players.length}</Badge>
           </Group>
           <Group>
@@ -569,191 +723,210 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
         verticalSpacing="sm"
         mt="md"
       >
-        {sortedPlayers.filter(player => player && player.summoner).map((player, index) => (
-          <Paper
-            key={`player-${player.summoner.name}-${index}`}
-            radius="md"
-            p="md"
-            style={INTERACTIVE_CARD_STYLES}
-          >
-            <Group wrap="nowrap" mb="xs">
-              <Avatar
-                size={48}
-                src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/profileicon/${player.summoner.profileIconId}.png`}
-                radius="xl"
-              />
-              <div style={{ flex: 1 }}>
-                <Text size="sm" fw={500} truncate>
-                  {player.summoner.name.split('#')[0]}
-                </Text>
-                <Group gap={6}>
-                  <Text size="xs" c="dimmed">Level {player.summoner.summonerLevel}</Text>
-                  {sortBy === 'winrate' && (
-                    <Text 
-                      size="xs" 
-                      c={getWinRateColor(getRecentWinrate(player))}
+        {sortedPlayers.filter(player => player && player.summoner).map((player, index) => {
+          const showRain = shouldShowAlert(player) || checkBadKDA(player);
+          const showFire = hasWinStreak(player); // Changed back to hasWinStreak
+          
+          return (
+            <Paper
+              key={`player-${player.summoner.name}-${index}`}
+              radius="md"
+              p="md"
+              style={{
+                ...INTERACTIVE_CARD_STYLES,
+                position: 'relative',
+                overflow: 'visible',
+                boxShadow: showFire 
+                  ? '0 0 25px rgba(255, 77, 0, 0.3), inset 0 0 25px rgba(255, 215, 0, 0.15)'
+                  : showRain
+                  ? '0 0 20px rgba(176, 224, 230, 0.3), inset 0 0 20px rgba(176, 224, 230, 0.15)'
+                  : undefined,
+                transition: 'box-shadow 0.3s ease',
+              }}
+            >
+              {showFire && <StatusLabel type="fire" />}
+              {showRain && <StatusLabel type="tilt" />}
+              {showRain && <RainEffect />}
+              {showFire && <BurningBorder />}
+              <Group wrap="nowrap" mb="xs">
+                <Avatar
+                  size={48}
+                  src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/profileicon/${player.summoner.profileIconId}.png`}
+                  radius="xl"
+                />
+                <div style={{ flex: 1 }}>
+                  <Text size="sm" fw={500} truncate>
+                    {player.summoner.name.split('#')[0]}
+                  </Text>
+                  <Group gap={6}>
+                    <Text size="xs" c="dimmed">Level {player.summoner.summonerLevel}</Text>
+                    {sortBy === 'winrate' && (
+                      <Text 
+                        size="xs" 
+                        c={getWinRateColor(getRecentWinrate(player))}
+                      >
+                        {getRecentWinrate(player).toFixed(1)}%
+                      </Text>
+                    )}
+                    {shouldShowAlert(player) && <AnimatedAlert type="tilt" />}
+                    {checkGamesLast24Hours(player) && <AnimatedAlert type="hobbylos" />}
+                    {checkBadKDA(player) && <AnimatedAlert type="tilt" />}
+                  </Group>
+                </div>
+                <Group gap={4}>
+                  <Tooltip label="Refresh player">
+                    <Button
+                      variant="subtle"
+                      color="gray"
+                      size="xs"
+                      px={8}
+                      loading={refreshingPlayers.has(player.summoner.name)}
+                      onClick={() => handlePlayerRefresh(player.summoner.name)}
                     >
-                      {getRecentWinrate(player).toFixed(1)}%
-                    </Text>
-                  )}
-                  {shouldShowAlert(player) && <AnimatedAlert type="tilt" />}
-                  {checkGamesLast24Hours(player) && <AnimatedAlert type="hobbylos" />}
-                  {checkBadKDA(player) && <AnimatedAlert type="tilt" />}
-                </Group>
-              </div>
-              <Group gap={4}>
-                <Tooltip label="Refresh player">
+                      <IconRefresh size={14} />
+                    </Button>
+                  </Tooltip>
                   <Button
                     variant="subtle"
-                    color="gray"
+                    color="blue"
                     size="xs"
                     px={8}
-                    loading={refreshingPlayers.has(player.summoner.name)}
-                    onClick={() => handlePlayerRefresh(player.summoner.name)}
+                    onClick={() => handleOpenOpGG(player.summoner.name)}
+                    rightSection={<IconChevronRight size={14} />}
                   >
-                    <IconRefresh size={14} />
+                    op.gg
                   </Button>
-                </Tooltip>
-                <Button
-                  variant="subtle"
-                  color="blue"
-                  size="xs"
-                  px={8}
-                  onClick={() => handleOpenOpGG(player.summoner.name)}
-                  rightSection={<IconChevronRight size={14} />}
-                >
-                  op.gg
-                </Button>
-              </Group>
-            </Group>
-
-            {player.rankedInfo && player.rankedInfo.length > 0 ? (
-              <Stack gap={6}>
-                {player.rankedInfo.map((queue, qIndex) => (
-                  <Paper
-                    key={`ranked-${player.summoner.name}-${queue.queueType}-${qIndex}`}
-                    p="xs"
-                    radius="sm"
-                    style={CARD_STYLES}
-                  >
-                    <Group justify="space-between" mb={4}>
-                      <Text size="xs" c="dimmed">{queue.queueType}</Text>
-                      <Text size="xs" fw={500}>{queue.leaguePoints} LP</Text>
-                    </Group>
-                    <Group justify="space-between" align="center">
-                      <Badge
-                        variant="filled"
-                        style={{ 
-                          background: queue.tier === 'IRON' 
-                            ? `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7mz3iLydD6sk14wva3SIld4dGKruvT7JBz5mWGabCHJ2C3_n8ta7KVWfebATQNlwwSpM&usqp=CAU') center/cover`
-                            : queue.tier === 'BRONZE'
-                            ? 'linear-gradient(45deg, #cd7f32, #8B4513)'
-                            : queue.tier === 'SILVER'
-                            ? 'linear-gradient(45deg, #C0C0C0, #808080)'
-                            : queue.tier === 'GOLD'
-                            ? 'linear-gradient(45deg, #FFD700, #DAA520)'
-                            : queue.tier === 'PLATINUM'
-                            ? 'linear-gradient(45deg, #00ff9f, #008B8B)'
-                            : queue.tier === 'DIAMOND'
-                            ? 'linear-gradient(45deg, #b9f2ff, #4169E1)'
-                            : queue.tier === 'MASTER'
-                            ? 'linear-gradient(45deg, #9370db, #800080)'
-                            : queue.tier === 'GRANDMASTER'
-                            ? 'linear-gradient(45deg, #ff4e50, #8B0000)'
-                            : queue.tier === 'CHALLENGER'
-                            ? 'linear-gradient(45deg, #00ccff, #0000CD)'
-                            : undefined,
-                          border: queue.tier === 'IRON' ? '1px solid #724b28' : undefined,
-                          color: '#fff',
-                          textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
-                          padding: '4px 8px',
-                          fontWeight: 600,
-                          letterSpacing: '0.5px',
-                         
-                        }}
-                        size="sm"
-                      >
-                        {queue.tier} {queue.rank}
-                      </Badge>
-                      <Group gap={6}>
-                        <Text size="xs" c="dimmed">
-                          {queue.wins}W {queue.losses}L
-                        </Text>
-                        <Text size="xs" fw={500} c={getWinRateColor((queue.wins / (queue.wins + queue.losses)) * 100)}>
-                          {Math.round((queue.wins / (queue.wins + queue.losses)) * 100)}%
-                        </Text>
-                      </Group>
-                    </Group>
-                  </Paper>
-                ))}
-              </Stack>
-            ) : (
-              <Text size="xs" c="dimmed" ta="center">Unranked</Text>
-            )}
-
-            {/* Enhanced K/D display with tooltip */}
-            <Tooltip
-              multiline
-              position="bottom"
-              label={
-                <Stack gap="xs">
-                  <Text size="xs" fw={500}>Last {player.recentMatches?.length || 0} Games:</Text>
-                  <Group gap="xs">
-                    <Stack gap={2}>
-                      <Text size="xs" c="dimmed">Total Kills:</Text>
-                      <Text size="xs" c="dimmed">Total Deaths:</Text>
-                      <Text size="xs" c="dimmed">KD Ratio:</Text>
-                    </Stack>
-                    <Stack gap={2}>
-                      <Text size="xs">{playerStats[player.summoner.puuid]?.kills || 0}</Text>
-                      <Text size="xs">{playerStats[player.summoner.puuid]?.deaths || 0}</Text>
-                      <Text size="xs">
-                        {((playerStats[player.summoner.puuid]?.kills || 0) / 
-                          Math.max(playerStats[player.summoner.puuid]?.deaths || 1, 1)).toFixed(2)}
-                      </Text>
-                    </Stack>
-                  </Group>
-                </Stack>
-              }
-            >
-              <Paper
-                mt="xs"
-                p="xs"
-                radius="sm"
-                style={{
-                  ...CARD_STYLES,
-                  backgroundColor: 'rgba(255, 255, 255, 0.05)',
-                  cursor: 'help'
-                }}
-              >
-                <Group justify="center" gap="xs">
-                  <Group gap={4}>
-                    <Text size="xs" fw={600} c="teal.4">
-                      {playerStats[player.summoner.puuid]?.kills || 0}
-                    </Text>
-                    <Text size="xs" c="dimmed">kills</Text>
-                  </Group>
-                  <Text size="xs" c="dimmed">/</Text>
-                  <Group gap={4}>
-                    <Text size="xs" fw={600} c="red.4">
-                      {playerStats[player.summoner.puuid]?.deaths || 0}
-                    </Text>
-                    <Text size="xs" c="dimmed">deaths</Text>
-                  </Group>
                 </Group>
-              </Paper>
-            </Tooltip>
+              </Group>
 
-            {player.recentMatches && (
-              <MatchHistoryPreview 
-                matches={player.recentMatches} 
-                puuid={player.summoner.puuid} 
-              />
-            )}
+              {player.rankedInfo && player.rankedInfo.length > 0 ? (
+                <Stack gap={6}>
+                  {player.rankedInfo.map((queue, qIndex) => (
+                    <Paper
+                      key={`ranked-${player.summoner.name}-${queue.queueType}-${qIndex}`}
+                      p="xs"
+                      radius="sm"
+                      style={CARD_STYLES}
+                    >
+                      <Group justify="space-between" mb={4}>
+                        <Text size="xs" c="dimmed">{queue.queueType}</Text>
+                        <Text size="xs" fw={500}>{queue.leaguePoints} LP</Text>
+                      </Group>
+                      <Group justify="space-between" align="center">
+                        <Badge
+                          variant="filled"
+                          style={{ 
+                            background: queue.tier === 'IRON' 
+                              ? `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7mz3iLydD6sk14wva3SIld4dGKruvT7JBz5mWGabCHJ2C3_n8ta7KVWfebATQNlwwSpM&usqp=CAU') center/cover`
+                              : queue.tier === 'BRONZE'
+                              ? 'linear-gradient(45deg, #cd7f32, #8B4513)'
+                              : queue.tier === 'SILVER'
+                              ? 'linear-gradient(45deg, #C0C0C0, #808080)'
+                              : queue.tier === 'GOLD'
+                              ? 'linear-gradient(45deg, #FFD700, #DAA520)'
+                              : queue.tier === 'PLATINUM'
+                              ? 'linear-gradient(45deg, #00ff9f, #008B8B)'
+                              : queue.tier === 'DIAMOND'
+                              ? 'linear-gradient(45deg, #b9f2ff, #4169E1)'
+                              : queue.tier === 'MASTER'
+                              ? 'linear-gradient(45deg, #9370db, #800080)'
+                              : queue.tier === 'GRANDMASTER'
+                              ? 'linear-gradient(45deg, #ff4e50, #8B0000)'
+                              : queue.tier === 'CHALLENGER'
+                              ? 'linear-gradient(45deg, #00ccff, #0000CD)'
+                              : undefined,
+                            border: queue.tier === 'IRON' ? '1px solid #724b28' : undefined,
+                            color: '#fff',
+                            textShadow: '1px 1px 2px rgba(0,0,0,0.5)',
+                            padding: '4px 8px',
+                            fontWeight: 600,
+                            letterSpacing: '0.5px',
+                           
+                          }}
+                          size="sm"
+                        >
+                          {queue.tier} {queue.rank}
+                        </Badge>
+                        <Group gap={6}>
+                          <Text size="xs" c="dimmed">
+                            {queue.wins}W {queue.losses}L
+                          </Text>
+                          <Text size="xs" fw={500} c={getWinRateColor((queue.wins / (queue.wins + queue.losses)) * 100)}>
+                            {Math.round((queue.wins / (queue.wins + queue.losses)) * 100)}%
+                          </Text>
+                        </Group>
+                      </Group>
+                    </Paper>
+                  ))}
+                </Stack>
+              ) : (
+                <Text size="xs" c="dimmed" ta="center">Unranked</Text>
+              )}
 
-            <StatusIndicator lastGameTime={getLastGameTime(player)} />
-          </Paper>
-        ))}
+              {/* Enhanced K/D display with tooltip */}
+              <Tooltip
+                multiline
+                position="bottom"
+                label={
+                  <Stack gap="xs">
+                    <Text size="xs" fw={500}>Last {player.recentMatches?.length || 0} Games:</Text>
+                    <Group gap="xs">
+                      <Stack gap={2}>
+                        <Text size="xs" c="dimmed">Total Kills:</Text>
+                        <Text size="xs" c="dimmed">Total Deaths:</Text>
+                        <Text size="xs" c="dimmed">KD Ratio:</Text>
+                      </Stack>
+                      <Stack gap={2}>
+                        <Text size="xs">{playerStats[player.summoner.puuid]?.kills || 0}</Text>
+                        <Text size="xs">{playerStats[player.summoner.puuid]?.deaths || 0}</Text>
+                        <Text size="xs">
+                          {((playerStats[player.summoner.puuid]?.kills || 0) / 
+                            Math.max(playerStats[player.summoner.puuid]?.deaths || 1, 1)).toFixed(2)}
+                        </Text>
+                      </Stack>
+                    </Group>
+                  </Stack>
+                }
+              >
+                <Paper
+                  mt="xs"
+                  p="xs"
+                  radius="sm"
+                  style={{
+                    ...CARD_STYLES,
+                    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+                    cursor: 'help'
+                  }}
+                >
+                  <Group justify="center" gap="xs">
+                    <Group gap={4}>
+                      <Text size="xs" fw={600} c="teal.4">
+                        {playerStats[player.summoner.puuid]?.kills || 0}
+                      </Text>
+                      <Text size="xs" c="dimmed">kills</Text>
+                    </Group>
+                    <Text size="xs" c="dimmed">/</Text>
+                    <Group gap={4}>
+                      <Text size="xs" fw={600} c="red.4">
+                        {playerStats[player.summoner.puuid]?.deaths || 0}
+                      </Text>
+                      <Text size="xs" c="dimmed">deaths</Text>
+                    </Group>
+                  </Group>
+                </Paper>
+              </Tooltip>
+
+              {player.recentMatches && (
+                <MatchHistoryPreview 
+                  matches={player.recentMatches} 
+                  puuid={player.summoner.puuid} 
+                />
+              )}
+
+              <StatusIndicator lastGameTime={getLastGameTime(player)} />
+            </Paper>
+          );
+        })}
       </SimpleGrid>
 
      

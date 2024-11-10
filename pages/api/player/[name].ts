@@ -138,7 +138,7 @@ export default async function handler(
     }
 
     // Get recent matches
-    const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${cachedPlayer.puuid}/ids?start=0&count=3`;
+    const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${cachedPlayer.puuid}/ids?start=0&count=5`;
     const matchesResponse = await fetchWithRetry(matchesUrl, {
       headers: {
         'X-Riot-Token': RIOT_API_KEY as string,

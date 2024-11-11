@@ -21,6 +21,9 @@ export interface PlayerData {
   puuid: string;
   summoner: Summoner;
   rankedInfo: RankedInfo[];
+  kills: number;
+  deaths: number;
+  assists: number;
   recentMatches?: {
     info: {
       gameCreation: number;

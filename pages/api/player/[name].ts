@@ -50,7 +50,7 @@ async function fetchWithRetry(url: string, options: RequestInit, retries = 5) {
   const cacheKey = url;
   const cachedData = cache.get(cacheKey);
   if (cachedData && Date.now() - cachedData.timestamp < CACHE_DURATION) {
-    return new Response(JSON.stringify(cachedData.data), { status: 200 });
+    return JSON.stringify(cachedData.data);
   }
 
   for (let i = 0; i < retries; i++) {
@@ -123,7 +123,9 @@ export default async function handler(
         'Accept': 'application/json'
       }
     });
-
+    if (typeof rankedResponse === 'string') {
+      throw new Error(`Failed to fetch ranked data: ${rankedResponse}`);
+    }
     if (rankedResponse.ok) {
       const rankedData = await rankedResponse.json();
       playerData.rankedInfo = rankedData.map((queue: RankedQueueInfo) => ({
@@ -145,7 +147,7 @@ export default async function handler(
       }
     });
 
-    if (matchesResponse.ok) {
+    if (matchesResponse instanceof Response && matchesResponse.ok) {
       const matchIds = await matchesResponse.json();
       /* eslint-disable @typescript-eslint/no-explicit-any */
       playerData.recentMatches = await Promise.all<any | null>(
@@ -158,6 +160,10 @@ export default async function handler(
               }
             });
             
+            if (typeof response === 'string') {
+              console.warn(`Failed to fetch match ${matchId}:`, response);
+              return null;
+            }
             if (!response.ok) return null;
             return response.json();
           } catch (error) {

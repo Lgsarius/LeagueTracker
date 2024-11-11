@@ -7,6 +7,7 @@ import { useState, useMemo } from 'react';
 import { CompareModal } from './CompareModal';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { differenceInHours } from 'date-fns';
+import ScoreboardModal from './ScoreboardModal'; // Import the new modal component
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -201,85 +202,125 @@ const getSoloQueueRank = (player: PlayerData) => {
   return (tierValue * 10000) + (rankValue * 100) + lpValue;
 };
 
-const MatchHistoryPreview = ({ matches, puuid }: { matches: any[], puuid: string }) => {
+const MatchHistoryPreview = ({ 
+  matches, 
+  puuid, 
+  getFormattedDuration 
+}: { 
+  matches: any[], 
+  puuid: string, 
+  getFormattedDuration: (match: any) => string 
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedMatch, setSelectedMatch] = useState<any>(null);
+  const [isModalOpen, setModalOpen] = useState(false);
+
+  const openModal = (match: any) => {
+    if (match) {
+      setSelectedMatch(match);
+      setModalOpen(true);
+    }
+  };
 
   return (
-    <Paper mt="md" p="md" radius="md" style={CARD_STYLES}>
-      <Group justify="space-between" mb={isExpanded ? "md" : 0}>
-        <Group gap={8}>
-          <IconHistory size={16} />
-          <Text size="sm" fw={500}>Match History</Text>
-        </Group>
-        <Button 
-          variant="subtle" 
-          size="xs" 
-          onClick={() => setIsExpanded(!isExpanded)}
-          rightSection={isExpanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
-        >
-          {isExpanded ? 'Hide' : 'Show'}
-        </Button>
-      </Group>
-      
-      <AnimatePresence>
-        {isExpanded && (
-          <motion.div
-            initial={{ height: 0, opacity: 0 }}
-            animate={{ height: 'auto', opacity: 1 }}
-            exit={{ height: 0, opacity: 0 }}
+    <>
+      <Paper mt="md" p="md" radius="md" style={CARD_STYLES}>
+        <Group justify="space-between" mb={isExpanded ? "md" : 0}>
+          <Group gap={8}>
+            <IconHistory size={16} />
+            <Text size="sm" fw={500}>Match History</Text>
+          </Group>
+          <Button 
+            variant="subtle" 
+            size="xs" 
+            onClick={() => setIsExpanded(!isExpanded)}
+            rightSection={isExpanded ? <IconChevronUp size={14} /> : <IconChevronDown size={14} />}
           >
-            {matches?.slice(0, MATCH_PREVIEW_COUNT).map((match, idx) => {
-              const participant = match.info.participants.find((p: any) => p.puuid === puuid);
-              if (!participant) return null;
-              
-              return (
-                <Paper 
-                  key={idx} 
-                  p="sm" 
-                  mb={8} 
-                  radius="md"
-                  style={{
-                    ...CARD_STYLES,
-                    backgroundColor: participant.win 
-                      ? 'rgba(76, 175, 80, 0.1)' 
-                      : 'rgba(244, 67, 54, 0.1)',
-                  }}
-                >
-                  <Group justify="space-between">
-                    <Group gap={8}>
-                      <Avatar
-                        size={32}
-                        src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${participant.championName}.png`}
-                        radius="sm"
-                      />
-                      <Stack gap={0}>
-                        <Text size="sm">{participant.championName}</Text>
+            {isExpanded ? 'Hide' : 'Show'}
+          </Button>
+        </Group>
+        
+        <AnimatePresence>
+          {isExpanded && (
+            <motion.div
+              initial={{ height: 0, opacity: 0 }}
+              animate={{ height: 'auto', opacity: 1 }}
+              exit={{ height: 0, opacity: 0 }}
+            >
+              {matches?.slice(0, MATCH_PREVIEW_COUNT).map((match, idx) => {
+                const participant = match.info.participants.find((p: any) => p.puuid === puuid);
+                if (!participant) return null;
+
+                const formattedDuration = getFormattedDuration(match);
+
+                return (
+                  <Paper 
+                    key={idx} 
+                    p="sm" 
+                    mb={8} 
+                    radius="md"
+                    style={{
+                      ...CARD_STYLES,
+                      backgroundColor: participant.win 
+                        ? 'rgba(76, 175, 80, 0.1)' 
+                        : 'rgba(244, 67, 54, 0.1)',
+                      cursor: 'pointer',
+                      transition: 'all 0.2s ease',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                        backgroundColor: participant.win 
+                          ? 'rgba(76, 175, 80, 0.2)' 
+                          : 'rgba(244, 67, 54, 0.2)',
+                      }
+                    }}
+                    onClick={() => openModal(match)}
+                  >
+                    <Group justify="space-between">
+                      <Group gap={8}>
+                        <Avatar
+                          size={32}
+                          src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${participant.championName}.png`}
+                          radius="sm"
+                        />
                         <Stack gap={0}>
-                          <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
-                            {formatDistanceToNow(new Date(match.info.gameCreation))} ago
-                          </Text>
-                          <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
-                            {getReadableGameMode(match.info.gameMode)}
-                          </Text>
+                          <Text size="sm">{participant.championName}</Text>
+                          <Stack gap={0}>
+                            <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
+                              {formatDistanceToNow(new Date(match.info.gameCreation))} ago
+                            </Text>
+                            <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
+                              {getReadableGameMode(match.info.gameMode)}
+                            </Text>
+                            <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
+                              Duration: {formattedDuration}
+                            </Text>
+                          </Stack>
                         </Stack>
+                      </Group>
+                      <Stack gap={2} justify="flex-end">
+                        <Text size="sm" fw={600} c={participant.win ? 'teal' : 'red'}>
+                          {participant.kills}/{participant.deaths}/{participant.assists}
+                        </Text>
+                        <Text size="xs" c={participant.win ? 'teal' : 'red'}>
+                          {participant.win ? 'Victory' : 'Defeat'}
+                        </Text>
                       </Stack>
                     </Group>
-                    <Stack gap={2} justify="flex-end">
-                      <Text size="sm" fw={600} c={participant.win ? 'teal' : 'red'}>
-                        {participant.kills}/{participant.deaths}/{participant.assists}
-                      </Text>
-                      <Text size="xs" c={participant.win ? 'teal' : 'red'}>
-                        {participant.win ? 'Victory' : 'Defeat'}
-                      </Text>
-                    </Stack>
-                  </Group>
-                </Paper>
-              );
-            })}
-          </motion.div>
-        )}
-      </AnimatePresence>
-    </Paper>
+                  </Paper>
+                );
+              })}
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Paper>
+
+      <ScoreboardModal 
+        opened={isModalOpen} 
+        onClose={() => setModalOpen(false)} 
+        match={selectedMatch} 
+      />
+    </>
   );
 };
 
@@ -571,62 +612,68 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
 
   const handlePlayerRefresh = async (name: string) => {
     setRefreshingPlayers(prev => new Set(prev).add(name));
-    try {
-      await onReloadPlayer(name);
-    } finally {
-      setRefreshingPlayers(prev => {
-        const next = new Set(prev);
-        next.delete(name);
-        return next;
-      });
-    }
+    await onReloadPlayer(name);
+    setRefreshingPlayers(prev => {
+      const next = new Set(prev);
+      next.delete(name);
+      return next;
+    });
   };
 
+  // Calculate player stats
+  const playerStats = useMemo(() => {
+    const stats: { [key: string]: { kills: number; deaths: number; assists: number } } = {};
+    
+    players?.forEach(player => {
+      if (!player.recentMatches) return;
+      
+      const playerMatches = player.recentMatches.slice(0, 20); // Last 20 matches
+      const totalStats = playerMatches.reduce((acc, match) => {
+        const participant = match.info.participants.find(
+          p => p.puuid === player.summoner.puuid
+        );
+        if (!participant) return acc;
+        
+        return {
+          kills: acc.kills + (participant.kills || 0),
+          deaths: acc.deaths + (participant.deaths || 0),
+          assists: acc.assists + (participant.assists || 0)
+        };
+      }, { kills: 0, deaths: 0, assists: 0 });
+
+      stats[player.summoner.puuid] = totalStats;
+    });
+
+    return stats;
+  }, [players]);
+
+  // Sort players based on selected option
   const sortedPlayers = useMemo(() => {
     if (!players) return [];
     
     return [...players].sort((a, b) => {
       switch (sortBy) {
-        case 'rank': {
-          const rankA = getSoloQueueRank(a);
-          const rankB = getSoloQueueRank(b);
-          return rankB - rankA;
-        }
-        case 'winrate': {
-          const wrA = getRecentWinrate(a);
-          const wrB = getRecentWinrate(b);
-          return wrB - wrA;
-        }
+        case 'rank':
+          return getSoloQueueRank(b) - getSoloQueueRank(a);
+        
+        case 'winrate':
+          return getRecentWinrate(b) - getRecentWinrate(a);
+        
         case 'level':
-          return b.summoner.summonerLevel - a.summoner.summonerLevel;
+          return (b.summoner?.summonerLevel || 0) - (a.summoner?.summonerLevel || 0);
+        
         default:
           return 0;
       }
     });
   }, [players, sortBy]);
 
-  const playerStats = useMemo(() => {
-    if (!players) return {};
-    
-    return players.reduce((acc, player) => {
-      const recentMatches = player.recentMatches?.slice(0, 5);
-      const stats = recentMatches?.reduce((matchAcc, match) => {
-        const playerStats = match.info.participants.find(
-          p => p.puuid === player.summoner.puuid
-        );
-        if (playerStats) {
-          matchAcc.kills += playerStats.kills;
-          matchAcc.deaths += playerStats.deaths;
-        }
-        return matchAcc;
-      }, { kills: 0, deaths: 0 });
-
-      acc[player.summoner.puuid] = stats || { kills: 0, deaths: 0 };
-      return acc;
-    }, {} as Record<string, { kills: number; deaths: number }>);
-  }, [players]);
-
-
+  // Calculate and format the match duration
+  const getFormattedDuration = (match: any) => {
+    if (!match?.info?.gameDuration) return '0:00';
+    const matchDuration = match.info.gameDuration; // Duration in seconds
+    return `${Math.floor(matchDuration / 60)}:${(matchDuration % 60).toString().padStart(2, '0')}`; // Format as MM:SS
+  };
 
   console.log('Players received:', players);
 
@@ -748,7 +795,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
       >
         {sortedPlayers.filter(player => player && player.summoner).map((player, index) => {
           const showRain = shouldShowAlert(player) || checkBadKDA(player);
-          const showFire = hasWinStreak(player); // Changed back to hasWinStreak
+          const showFire = hasWinStreak(player);
           
           return (
             <Paper
@@ -944,10 +991,16 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                 <MatchHistoryPreview 
                   matches={player.recentMatches} 
                   puuid={player.summoner.puuid} 
+                  getFormattedDuration={getFormattedDuration}
                 />
               )}
 
               <StatusIndicator lastGameTime={getLastGameTime(player)} />
+              {player.recentMatches && (
+                <Text size="xs" c="dimmed">
+                  Duration: {getFormattedDuration(player.recentMatches[0])}
+                </Text>
+              )}
             </Paper>
           );
         })}

@@ -47,34 +47,37 @@ const SortHeader = ({
   <th 
     className={clsx(
       "p-4 text-sm font-semibold cursor-pointer transition-colors",
-      "hover:bg-gray-800/50"
+      "hover:bg-blue-600/30",
+      "flex flex-col items-center"
     )}
     onClick={() => onSort(field)}
     style={style}
   >
-    <Group gap={4} justify="space-between" wrap="nowrap">
-      {label}
-      <div className="flex flex-col -space-y-2">
+    <Text className="text-center">{label}</Text>
+    <div className="flex flex-col items-center">
+      <div className="flex items-center transition-transform duration-300 transform hover:scale-110">
         <IconChevronUp 
-          size={16}
+          size={24}
           className={clsx(
             "transition-colors",
             sortField === field && sortDirection === 'asc' 
-              ? 'text-blue-400' 
-              : 'text-gray-600/50'
-          )}
-        />
-        <IconChevronDown 
-          size={16}
-          className={clsx(
-            "transition-colors",
-            sortField === field && sortDirection === 'desc' 
-              ? 'text-blue-400' 
+              ? 'text-blue-500 animate-bounce'
               : 'text-gray-600/50'
           )}
         />
       </div>
-    </Group>
+      <div className="flex items-center transition-transform duration-300 transform hover:scale-110">
+        <IconChevronDown 
+          size={24}
+          className={clsx(
+            "transition-colors",
+            sortField === field && sortDirection === 'desc' 
+              ? 'text-blue-500 animate-bounce'
+              : 'text-gray-600/50'
+          )}
+        />
+      </div>
+    </div>
   </th>
 );
 
@@ -89,12 +92,13 @@ const getRankValue = (queue: any) => {
     'GRANDMASTER': 8,
     'MASTER': 7,
     'DIAMOND': 6,
-    'PLATINUM': 5,
-    'GOLD': 4,
-    'SILVER': 3,
-    'BRONZE': 2,
-    'IRON': 1,
-    'UNRANKED': 0
+    'EMERALD': 5,
+    'PLATINUM': 4,
+    'GOLD': 3,
+    'SILVER': 2,
+    'BRONZE': 1,
+    'IRON': 0,
+    'UNRANKED': -1
   };
 
   const rankValues: { [key: string]: number } = {
@@ -115,6 +119,7 @@ export default function LeaderboardPage() {
   const [error, setError] = useState<string | null>(null);
   const [sortField, setSortField] = useState('rank');
   const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('desc');
+  const [isMenuOpen, setMenuOpen] = useState(false);
 
   const handleSort = (field: string) => {
     setSortDirection(sortField === field && sortDirection === 'asc' ? 'desc' : 'asc');
@@ -143,7 +148,7 @@ export default function LeaderboardPage() {
         recentMatches: player.recentMatches || [],
       }));
 
-      setPlayers(transformedPlayers);
+      setPlayers(transformedPlayers as PlayerData[]);
     } catch (err) {
       console.error('Error fetching players:', err);
       setError(err instanceof Error ? err.message : 'Failed to load players');
@@ -268,8 +273,8 @@ export default function LeaderboardPage() {
             radius={0} 
             p="xl"
           >
-            <div className="w-full overflow-x-auto">
-              <table className="w-full border-separate border-spacing-0" style={{ minWidth: '100%' }}>
+            <div className="table-container overflow-x-auto">
+              <table className="w-full border-separate border-spacing-0">
                 <thead>
                   <tr>
                     <SortHeader 
@@ -410,6 +415,7 @@ function getRankGradient(tier: string) {
     case 'SILVER': return { from: '#C0C0C0', to: '#808080' };
     case 'GOLD': return { from: '#FFD700', to: '#DAA520' };
     case 'PLATINUM': return { from: '#00ff9f', to: '#008B8B' };
+    case 'EMERALD': return { from: '#50C878', to: '#007A33' };
     case 'DIAMOND': return { from: '#b9f2ff', to: '#4169E1' };
     case 'MASTER': return { from: '#9370db', to: '#800080' };
     case 'GRANDMASTER': return { from: '#ff4e50', to: '#8B0000' };
@@ -417,3 +423,4 @@ function getRankGradient(tier: string) {
     default: return { from: 'gray', to: 'dark' };
   }
 }
+

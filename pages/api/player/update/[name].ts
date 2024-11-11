@@ -88,24 +88,17 @@ export default async function handler(
       if (!mergedMatches.some(newMatch => 
         newMatch.info.gameCreation === existingMatch.info.gameCreation
       )) {
-        // Ensure existingMatch has all required properties before pushing
+        // Keep existing match if it's not a duplicate
         if (existingMatch?.info?.gameCreation && 
             existingMatch?.info?.gameDuration && 
             existingMatch?.info?.gameMode && 
             existingMatch?.info?.participants) {
-          mergedMatches.push(existingMatch as {
-            info: {
-              gameCreation: number;
-              gameDuration: number;
-              gameMode: string;
-              participants: any[];
-            }
-          });
+          mergedMatches.push(existingMatch);
         }
       }
     });
     
-    // Sort matches by gameCreation (newest first) and limit to 20 matches
+    // Sort and limit to 20 most recent matches
     const sortedMatches = mergedMatches
       .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
       .slice(0, 20);

@@ -322,16 +322,7 @@ export default function HomePage() {
               />
             )}
 
-            <Link href="/list">
-              <Button
-                variant="gradient"
-                gradient={{ from: 'indigo', to: 'cyan' }}
-                size="md"
-                mt="xl"
-              >
-                Bestenliste
-              </Button>
-            </Link>
+           
           </Container>
         </AppShell>
       </motion.div>

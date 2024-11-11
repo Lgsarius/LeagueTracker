@@ -1,6 +1,9 @@
+'use client';
+
 /* eslint-disable */
+
 import { SimpleGrid, Paper, Text, Group, Avatar, Badge, Button, Tooltip, Stack, Select} from '@mantine/core';
-import { IconChevronRight, IconSkull, IconClock, IconRefresh, IconUserPlus, IconChevronDown, IconChevronUp, IconHistory } from '@tabler/icons-react';
+import { IconChevronRight, IconSkull, IconClock, IconRefresh, IconUserPlus, IconChevronDown, IconChevronUp, IconHistory, IconNotes, IconMedal } from '@tabler/icons-react';
 import { PlayerData } from '@/types/player';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useMemo } from 'react';
@@ -8,6 +11,7 @@ import { CompareModal } from './CompareModal';
 import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { differenceInHours } from 'date-fns';
 import ScoreboardModal from './ScoreboardModal'; // Import the new modal component
+import { useRouter } from 'next/navigation';
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -50,7 +54,10 @@ const INTERACTIVE_CARD_STYLES = {
 const ALERT_THRESHOLD_LOSSES = 3;
 const ALERT_THRESHOLD_KDA = 1.0;
 const GAMES_24H_THRESHOLD = 5;
-const MATCH_PREVIEW_COUNT = 5;
+const MATCH_PREVIEW_COUNT = 10;
+
+// Update the constants
+const ANALYSIS_MATCH_COUNT = 5; // New constant for analysis
 
 // Add this new component for the animated alert
 const AnimatedAlert = ({ type }: { type: 'tilt' | 'hobbylos' }) => {
@@ -99,7 +106,7 @@ const AnimatedAlert = ({ type }: { type: 'tilt' | 'hobbylos' }) => {
 const shouldShowAlert = (player: PlayerData) => {
   if (!player.recentMatches || player.recentMatches.length < ALERT_THRESHOLD_LOSSES) return false;
   
-  const recentMatches = player.recentMatches.slice(0, ALERT_THRESHOLD_LOSSES);
+  const recentMatches = player.recentMatches.slice(0, ANALYSIS_MATCH_COUNT);
   let consecutiveLosses = 0;
   
   for (const match of recentMatches) {
@@ -116,7 +123,7 @@ const shouldShowAlert = (player: PlayerData) => {
 const checkBadKDA = (player: PlayerData) => {
   if (!player.recentMatches || player.recentMatches.length === 0) return false;
   
-  const recentMatches = player.recentMatches.slice(0, 3);
+  const recentMatches = player.recentMatches.slice(0, ANALYSIS_MATCH_COUNT);
   const averageKDA = recentMatches.reduce((acc, match) => {
     const participant = match.info.participants.find(
       p => p.puuid === player.summoner.puuid
@@ -221,6 +228,9 @@ const MatchHistoryPreview = ({
       setModalOpen(true);
     }
   };
+
+  console.log('Number of matches:', matches?.length);
+  console.log('Match data:', matches);
 
   return (
     <>
@@ -624,7 +634,7 @@ const TrendIndicator = ({ matches, puuid }: { matches: any[], puuid: string }) =
       };
     }
 
-    const recentMatches = matches.slice(0, 5);
+    const recentMatches = matches.slice(0, ANALYSIS_MATCH_COUNT);
     let currentStreak = 0;
     let isWinStreak = false;
     const kdaTrend: number[] = [];
@@ -737,7 +747,7 @@ const TrendIndicator = ({ matches, puuid }: { matches: any[], puuid: string }) =
 const TiltMeter = ({ matches, puuid }: { matches: any[], puuid: string }) => {
   const tiltLevel = useMemo(() => {
     let tiltScore = 0;
-    matches?.slice(0, 5).forEach((match, index) => {
+    matches?.slice(0, ANALYSIS_MATCH_COUNT).forEach((match, index) => {
       const participant = match.info.participants.find((p: { puuid: string }) => p.puuid === puuid);
       if (!participant) return;
 
@@ -967,25 +977,46 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
     return 'gray';
   };
 
+  const router = useRouter();
+
   return (
     <>
-      <Group mb="xl" justify="flex-end">
-        <Button
-          variant="light"
-          leftSection={<IconRefresh size={20} />}
-          onClick={onInitNewPlayers}
-          loading={isLoading}
-        >
-          Spieler laden
-        </Button>
-        <Button
-          variant="filled"
-          leftSection={<IconRefresh size={20} />}
-          onClick={onReload}
-          loading={isLoading}
-        >
-          Alle aktualisieren
-        </Button>
+      <Group mb="xl" justify="space-between">
+        <Group>
+          <Button
+            variant="light"
+            leftSection={<IconNotes size={20} />}
+            onClick={() => router.push('/stats')}
+          >
+            League Stats
+          </Button>
+          <Button
+            variant="light"
+            leftSection={<IconMedal size={20} />}
+            onClick={() => router.push('/list')}
+          >
+            Bestenliste
+          </Button>
+        </Group>
+
+        <Group>
+          <Button
+            variant="light"
+            leftSection={<IconRefresh size={20} />}
+            onClick={onInitNewPlayers}
+            loading={isLoading}
+          >
+            Spieler laden
+          </Button>
+          <Button
+            variant="filled"
+            leftSection={<IconRefresh size={20} />}
+            onClick={onReload}
+            loading={isLoading}
+          >
+            Alle aktualisieren
+          </Button>
+        </Group>
       </Group>
       <Paper p="md" radius="md" mb="lg" style={CARD_STYLES}>
         <Group justify="space-between">

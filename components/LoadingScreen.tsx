@@ -48,9 +48,6 @@ export function LoadingScreen() {
           <Title
             order={1}
             size={36}
-            fw={900}
-            variant="gradient"
-            gradient={{ from: 'blue', to: 'cyan' }}
           >
             LostGames LoL Tracker
           </Title>

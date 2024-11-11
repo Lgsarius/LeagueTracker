@@ -8,12 +8,15 @@ import playerData from '@/data/players.json';
 import summonerTags from '@/data/summoner-tags.json';
 import Link from 'next/link';
 import Image from 'next/image';
+import { LoadingScreen } from '@/components/LoadingScreen';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [isInitialized, setIsInitialized] = useState(false);
+  const [showLoadingScreen, setShowLoadingScreen] = useState(true);
 
   // Modify the initial load effect
   useEffect(() => {
@@ -48,6 +51,10 @@ export default function HomePage() {
         setError('Failed to load initial player data');
       } finally {
         setIsLoading(false);
+        // Add a minimum display time for the loading screen
+        setTimeout(() => {
+          setShowLoadingScreen(false);
+        }, 1500); // Show loading screen for at least 1.5 seconds
       }
     };
 
@@ -235,87 +242,99 @@ export default function HomePage() {
   };
 
   return (
-    <AppShell
-      bg="dark.8"
-      style={{ minHeight: '100vh' }}
-    >
-      <Container 
-        size="100%"
-        py="xl"
-        px={{ base: 'md', sm: 40 }}
+    <>
+      <AnimatePresence>
+        {showLoadingScreen && <LoadingScreen />}
+      </AnimatePresence>
+
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: showLoadingScreen ? 0 : 1 }}
+        transition={{ duration: 0.5 }}
       >
-        {/* Hero Section */}
-        <Paper
-          radius="lg"
-          p={{ base: 'md', sm: 'xl' }}
-          mb={50}
+        <AppShell
+          bg="dark.8"
+          style={{ minHeight: '100vh' }}
         >
-          <Group justify="space-between" align="flex-start">
-            <Group align="center" gap="md">
-              <Image 
-                src="/LOGO.png"
-                alt="LostGames Logo"
-                width={80}
-                height={80}
-                style={{
-                  borderRadius: '50%',
-                  objectFit: 'cover',
-                }}
-              />
-              <Box>
-                <Title 
-                  order={1}
-                  size={48}
-                  fw={900}
-                  variant="gradient"
-                >
-                  LostGames LoL Tracker
-                </Title>
-                <Text c="dimmed" mt="md" size="xl" maw={600}>
-                  Alle LostGames LoL Spieler
-                </Text>
-                <Text c="dimmed.4" mt="sm" size="md">
-                  Aktuelle Anzahl an Accounts: {players.length}
-                </Text>
-              </Box>
-            </Group>
-          </Group>
-        </Paper>
-
-        {/* Status Messages */}
-        {error && (
-          <Paper p="md" radius="md" mb={20} bg="red.9">
-            <Text c="white">{error}</Text>
-          </Paper>
-        )}
-
-        {/* Players Grid */}
-        {isLoading && !players.length ? (
-          <Paper p="xl" radius="md" ta="center">
-            <Text size="lg">Loading players...</Text>
-          </Paper>
-        ) : (
-          <PlayerList 
-            players={players} 
-            onRemovePlayer={handleRemovePlayer} 
-            onReload={loadAllPlayers}
-            onReloadPlayer={handleReloadPlayer}
-            isLoading={isLoading}
-            onInitNewPlayers={initializeNewPlayers}
-          />
-        )}
-
-        <Link href="/list">
-          <Button
-            variant="gradient"
-            gradient={{ from: 'indigo', to: 'cyan' }}
-            size="md"
-            mt="xl"
+          <Container 
+            size="100%"
+            py="xl"
+            px={{ base: 'md', sm: 40 }}
           >
-            Bestenliste
-          </Button>
-        </Link>
-      </Container>
-    </AppShell>
+            {/* Hero Section */}
+            <Paper
+              radius="lg"
+              p={{ base: 'md', sm: 'xl' }}
+              mb={50}
+            >
+              <Group justify="space-between" align="flex-start">
+                <Group align="center" gap="md">
+                  <Image 
+                    src="/LOGO.png"
+                    alt="LostGames Logo"
+                    width={80}
+                    height={80}
+                    style={{
+                      borderRadius: '50%',
+                      objectFit: 'cover',
+                    }}
+                  />
+                  <Box>
+                    <Title 
+                      order={1}
+                      size={48}
+                      fw={900}
+                      variant="gradient"
+                    >
+                      LostGames LoL Tracker
+                    </Title>
+                    <Text c="dimmed" mt="md" size="xl" maw={600}>
+                      Alle LostGames LoL Spieler
+                    </Text>
+                    <Text c="dimmed.4" mt="sm" size="md">
+                      Aktuelle Anzahl an Accounts: {players.length}
+                    </Text>
+                  </Box>
+                </Group>
+              </Group>
+            </Paper>
+
+            {/* Status Messages */}
+            {error && (
+              <Paper p="md" radius="md" mb={20} bg="red.9">
+                <Text c="white">{error}</Text>
+              </Paper>
+            )}
+
+            {/* Players Grid */}
+            {isLoading && !players.length ? (
+              <Paper p="xl" radius="md" ta="center">
+                <Text size="lg">Loading players...</Text>
+              </Paper>
+            ) : (
+              <PlayerList 
+                players={players} 
+                onRemovePlayer={handleRemovePlayer} 
+                onReload={loadAllPlayers}
+                onReloadPlayer={handleReloadPlayer}
+                isLoading={isLoading}
+                onInitNewPlayers={initializeNewPlayers}
+              />
+            )}
+
+            <Link href="/list">
+              <Button
+                variant="gradient"
+                gradient={{ from: 'indigo', to: 'cyan' }}
+                size="md"
+                mt="xl"
+              >
+                Bestenliste
+              </Button>
+            </Link>
+          </Container>
+        </AppShell>
+      </motion.div>
+    </>
   );
 }

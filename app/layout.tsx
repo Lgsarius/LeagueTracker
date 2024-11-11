@@ -55,19 +55,22 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
-        <ColorSchemeScript />
+        <ColorSchemeScript defaultColorScheme="dark" />
         <link rel="icon" href="/LOGO.png" />
-        <meta name="viewport" content="minimum-scale=1, initial-scale=1, width=device-width, user-scalable=no" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
       <body>
-        <MantineProvider theme={theme} defaultColorScheme="dark">
+        <MantineProvider 
+          theme={theme} 
+          defaultColorScheme="dark"
+          forceColorScheme="dark"
+        >
           <main className="min-h-screen bg-gradient-to-b from-zinc-900 via-zinc-800 to-zinc-900">
             {children}
           </main>
         </MantineProvider>
-
       </body>
     </html>
   );

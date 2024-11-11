@@ -1,6 +1,6 @@
 'use client';
 
-import { Modal, MultiSelect, Table, Group, Avatar, Text, Badge, Paper } from '@mantine/core';
+import { Modal, MultiSelect, Table, Group, Avatar, Text, Badge } from '@mantine/core';
 import { useState } from 'react';
 import { PlayerData } from '@/types/player';
 

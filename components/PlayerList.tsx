@@ -165,8 +165,8 @@ const getRecentWinrate = (player: PlayerData) => {
 type SortOption = 'rank' | 'winrate' | 'level';
 
 const SORT_OPTIONS = [
-  { value: 'rank', label: 'Rank (Solo/Duo)' },
-  { value: 'winrate', label: '7-Day Win Rate' },
+  { value: 'rank', label: 'Rang (Solo/Duo)' },
+  { value: 'winrate', label: '7-Tage Siegesrate' },
   { value: 'level', label: 'Level' },
 ];
 
@@ -260,7 +260,7 @@ const MatchHistoryPreview = ({
                     mb={8} 
                     radius="md"
                     style={{
-                      ...CARD_STYLES,
+                      ...CARD_STYLES, 
                       backgroundColor: participant.win 
                         ? 'rgba(76, 175, 80, 0.1)' 
                         : 'rgba(244, 67, 54, 0.1)',
@@ -336,12 +336,15 @@ const StatBox = ({ label, value, color }: { label: string; value: string | numbe
   </Paper>
 );
 
-// Add this new component
-const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
+// Update the StatusIndicator component
+const StatusIndicator = ({ lastGameTime, lastGameDuration }: { 
+  lastGameTime: Date | null,
+  lastGameDuration?: string 
+}) => {
   const getStatusInfo = (lastGameTime: Date | null) => {
     if (!lastGameTime) return {
       color: 'gray',
-      label: 'No recent games',
+      label: 'Keine kürzlichen Spiele',
       dotAnimation: false
     };
 
@@ -349,7 +352,7 @@ const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
     
     if (hoursSince < 1) return {
       color: 'green',
-      label: 'Recently active',
+      label: 'Kürzlich aktiv',
       dotAnimation: true
     };
     
@@ -384,26 +387,26 @@ const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
         backgroundColor: 'rgba(0, 0, 0, 0.2)'
       }}
     >
-      <Group gap={8} align="center">
-        <motion.div
-          animate={status.dotAnimation ? {
-            scale: [1, 1.2, 1],
-            opacity: [1, 0.7, 1]
-          } : {}}
-          transition={{
-            duration: 2,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          style={{
-            width: 8,
-            height: 8,
-            borderRadius: '50%',
-            backgroundColor: `var(--mantine-color-${status.color}-6)`,
-            boxShadow: `0 0 8px var(--mantine-color-${status.color}-6)`
-          }}
-        />
-        <Group gap={4} align="center">
+      <Group justify="space-between" align="center">
+        <Group gap={8} align="center">
+          <motion.div
+            animate={status.dotAnimation ? {
+              scale: [1, 1.2, 1],
+              opacity: [1, 0.7, 1]
+            } : {}}
+            transition={{
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            style={{
+              width: 8,
+              height: 8,
+              borderRadius: '50%',
+              backgroundColor: `var(--mantine-color-${status.color}-6)`,
+              boxShadow: `0 0 8px var(--mantine-color-${status.color}-6)`
+            }}
+          />
           <Text 
             size="xs" 
             fw={500}
@@ -414,17 +417,12 @@ const StatusIndicator = ({ lastGameTime }: { lastGameTime: Date | null }) => {
           >
             {status.label}
           </Text>
-          {lastGameTime && (
-            <Tooltip 
-              label={new Date(lastGameTime).toLocaleString()} 
-              position="right"
-            >
-              <Text size="xs" c="dimmed" style={{ cursor: 'help' }}>
-                ({formatDistanceToNow(lastGameTime, { addSuffix: true })})
-              </Text>
-            </Tooltip>
-          )}
         </Group>
+        {lastGameDuration && (
+          <Text size="xs" c="dimmed">
+            Spieldauer: {lastGameDuration}
+          </Text>
+        )}
       </Group>
     </Paper>
   );
@@ -602,6 +600,243 @@ const getReadableGameMode = (gameMode: string): string => {
   }
 };
 
+// Add these new types
+type TrendData = {
+  wins: number;
+  losses: number;
+  streak: number;
+  isWinStreak: boolean;
+  kdaTrend: number[];
+  averageKDA: number;
+};
+
+// Enhanced TrendIndicator component
+const TrendIndicator = ({ matches, puuid }: { matches: any[], puuid: string }) => {
+  const trendData = useMemo((): TrendData => {
+    if (!matches || matches.length === 0) {
+      return {
+        wins: 0,
+        losses: 0,
+        streak: 0,
+        isWinStreak: false,
+        kdaTrend: [],
+        averageKDA: 0
+      };
+    }
+
+    const recentMatches = matches.slice(0, 5);
+    let currentStreak = 0;
+    let isWinStreak = false;
+    const kdaTrend: number[] = [];
+    let totalKDA = 0;
+    const data = recentMatches.reduce((acc, match, index) => {
+      const participant = match.info.participants.find((p: { puuid: string }) => p.puuid === puuid);
+      if (!participant) return acc;
+
+      // Calculate KDA
+      const kda = ((participant.kills + participant.assists) / Math.max(1, participant.deaths));
+      kdaTrend.push(Number(kda.toFixed(2)));
+      totalKDA += kda;
+
+      // Track wins/losses
+      if (participant.win) {
+        acc.wins++;
+        if (index === 0 || isWinStreak) {
+          currentStreak++;
+          isWinStreak = true;
+        }
+      } else {
+        acc.losses++;
+        if (index === 0 || !isWinStreak) {
+          currentStreak++;
+          isWinStreak = false;
+        }
+      }
+
+      return acc;
+    }, { wins: 0, losses: 0 });
+
+    return {
+      ...data,
+      streak: currentStreak,
+      isWinStreak,
+      kdaTrend,
+      averageKDA: totalKDA / recentMatches.length
+    };
+  }, [matches, puuid]);
+
+  if (!matches || matches.length === 0) return null;
+
+  return (
+    <Paper mt="xs" p="xs" radius="md" style={CARD_STYLES}>
+      <Stack>
+        <Group>
+          <Text size="xs" fw={500}>Aktuelle Leistung</Text>
+          <Badge 
+            variant="light" 
+            color={trendData.wins > trendData.losses ? 'teal' : 'red'}
+          >
+            {trendData.wins}S {trendData.losses}N
+          </Badge>
+        </Group>
+
+        {/* Streak Indicator */}
+        {trendData.streak > 1 && (
+          <Group>
+            <motion.div
+              animate={{ scale: [1, 1.1, 1] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            >
+              <Badge 
+                variant="filled" 
+                color={trendData.isWinStreak ? 'teal' : 'red'}
+                leftSection={trendData.isWinStreak ? '🔥' : '❄️'}
+              >
+                {trendData.streak} {trendData.isWinStreak ? 'Siege' : 'Niederlagen'} in Folge
+              </Badge>
+            </motion.div>
+          </Group>
+        )}
+        {/* KDA Trend */}
+        <Group>
+          <Text size="xs" c="dimmed">KDA Verlauf:</Text>
+          {trendData.kdaTrend.map((kda, index) => (
+            <Tooltip 
+              key={index} 
+              label={`Spiel ${index + 1}: ${kda.toFixed(2)} KDA`}
+            >
+              <Text 
+                size="xs" 
+                fw={500}
+                c={kda >= 3 ? 'teal' : kda >= 2 ? 'yellow' : 'red'}
+              >
+                {kda.toFixed(1)}
+              </Text>
+            </Tooltip>
+          ))}
+          <Tooltip label="Durchschnittliche KDA">
+            <Badge variant="dot" color={trendData.averageKDA >= 3 ? 'teal' : 'gray'}>
+              {trendData.averageKDA.toFixed(2)}
+            </Badge>
+          </Tooltip>
+        </Group>
+
+        {/* Optional: Add performance summary */}
+        <Text size="xs" c="dimmed" style={{ fontStyle: 'italic' }}>
+          {trendData.averageKDA >= 3 
+            ? 'Hervorragende Leistung' 
+            : trendData.averageKDA >= 2 
+            ? 'Solide Leistung' 
+            : 'Verbesserungspotenzial'}
+        </Text>
+      </Stack>
+    </Paper>
+  );
+};
+
+const TiltMeter = ({ matches, puuid }: { matches: any[], puuid: string }) => {
+  const tiltLevel = useMemo(() => {
+    let tiltScore = 0;
+    matches?.slice(0, 5).forEach((match, index) => {
+      const participant = match.info.participants.find((p: { puuid: string }) => p.puuid === puuid);
+      if (!participant) return;
+
+      // Factors that increase tilt
+      if (!participant.win) tiltScore += 2;
+      if (participant.deaths > 8) tiltScore += 1;
+      if (participant.deaths > participant.kills * 2) tiltScore += 1;
+    });
+
+    return {
+      level: tiltScore,
+      icon: tiltScore < 3 ? '😊' : tiltScore < 6 ? '😐' : tiltScore < 9 ? '😤' : '🤬',
+      label: tiltScore < 3 ? 'Entspannt' : tiltScore < 6 ? 'Normal' : tiltScore < 9 ? 'Leicht getiltet' : 'Hochgetiltet'
+    };
+  }, [matches, puuid]);
+
+  return (
+    <Tooltip label={tiltLevel.label}>
+      <Badge 
+        size="sm" 
+        variant="light"
+        color={tiltLevel.level < 6 ? 'green' : tiltLevel.level < 9 ? 'yellow' : 'red'}
+      >
+        {tiltLevel.icon} {tiltLevel.level}/12
+      </Badge>
+    </Tooltip>
+  );
+};
+
+const AramGamerBadge = ({ matches }: { matches: any[] }) => {
+  const stats = useMemo(() => {
+    if (!matches?.length) return null;
+
+    // Count games by mode
+    const gameModes = matches.reduce((acc, match) => {
+      const mode = match.info.gameMode;
+      acc[mode] = (acc[mode] || 0) + 1;
+      return acc;
+    }, {} as Record<string, number>);
+
+    // Calculate ARAM percentage
+    const aramGames = gameModes['ARAM'] || 0;
+    const totalGames = matches.length;
+    const aramPercentage = (aramGames / totalGames) * 100;
+
+    // Define badge properties based on ARAM percentage
+    if (aramPercentage >= 50) {
+      return {
+        isAramGamer: true,
+        percentage: aramPercentage,
+        level: aramPercentage >= 80 ? 'ARAM Lord' : 
+               aramPercentage >= 65 ? 'ARAM Enthusiast' : 
+               'ARAM Fan',
+        icon: aramPercentage >= 80 ? '👑' : 
+              aramPercentage >= 65 ? '⭐' : 
+              '🌟',
+        color: aramPercentage >= 80 ? 'gradient' : 'light',
+        gradient: { from: 'gold', to: 'yellow' }
+      };
+    }
+
+    return null;
+  }, [matches]);
+
+  if (!stats?.isAramGamer) return null;
+
+  return (
+    <Tooltip 
+      label={`${stats.percentage.toFixed(0)}% ARAM Spiele`}
+      position="top"
+    >
+      <motion.div
+        initial={{ scale: 0 }}
+        animate={{ scale: 1 }}
+        transition={{
+          type: "spring",
+          stiffness: 260,
+          damping: 20
+        }}
+      >
+        <Badge 
+          variant={stats.color}
+          gradient={stats.color === 'gradient' ? stats.gradient : undefined}
+          size="sm"
+          style={{
+            cursor: 'help',
+            ...(stats.color === 'gradient' && {
+              border: '1px solid rgba(255,215,0,0.3)',
+              boxShadow: '0 0 10px rgba(255,215,0,0.2)'
+            })
+          }}
+        >
+          {stats.icon} {stats.level}
+        </Badge>
+      </motion.div>
+    </Tooltip>
+  );
+};
+
 export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer, isLoading }: PlayerListProps) {
   const [compareModalOpen, setCompareModalOpen] = useState(false);
   const [sortBy, setSortBy] = useState<SortOption>('rank');
@@ -749,7 +984,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
           onClick={onReload}
           loading={isLoading}
         >
-          Refresh All Players
+          Alle aktualisieren
         </Button>
       </Group>
       <Paper p="md" radius="md" mb="lg" style={CARD_STYLES}>
@@ -775,7 +1010,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
             </Button>
           
             <Text size="sm" c="dimmed">
-              Last updated: {formatLastUpdated(lastUpdated)}
+              Zuletzt aktualisiert: {formatLastUpdated(lastUpdated)}
             </Text>
           </Group>
         </Group>
@@ -995,12 +1230,19 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                 />
               )}
 
-              <StatusIndicator lastGameTime={getLastGameTime(player)} />
-              {player.recentMatches && (
-                <Text size="xs" c="dimmed">
-                  Duration: {getFormattedDuration(player.recentMatches[0])}
-                </Text>
-              )}
+              <StatusIndicator 
+                lastGameTime={getLastGameTime(player)} 
+                lastGameDuration={player.recentMatches ? getFormattedDuration(player.recentMatches[0]) : undefined}
+              />
+              <TrendIndicator 
+                matches={player.recentMatches || []} 
+                puuid={player.summoner.puuid}
+              />
+              <TiltMeter 
+                matches={player.recentMatches || []} 
+                puuid={player.summoner.puuid}
+              />
+              <AramGamerBadge matches={player.recentMatches || []} />
             </Paper>
           );
         })}

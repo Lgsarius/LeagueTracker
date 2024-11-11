@@ -33,6 +33,11 @@ export default function HomePage() {
             },
             rankedInfo: player.rankedInfo || [],
             recentMatches: player.recentMatches || [],
+          })).map(player => ({
+            ...player,
+            kills: 0,
+            deaths: 0,
+            assists: 0,
           }));
           
           setPlayers(initialPlayers);

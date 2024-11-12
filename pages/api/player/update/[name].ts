@@ -61,6 +61,7 @@ export default async function handler(
         gameDuration: number;
         gameMode: string;
         participants: any[];
+        queueId: number | null;
       }
     }
 
@@ -79,6 +80,19 @@ export default async function handler(
           deaths: p.deaths,
           assists: p.assists,
           win: p.win,
+          pings: {
+            missing: p.enemyMissingPings || 0,
+            danger: p.dangerPings || 0,
+            command: p.commandPings || 0,
+            vision: p.enemyVisionPings || 0,
+            getBack: p.getBackPings || 0,
+            hold: p.holdPings || 0,
+            needVision: p.needVisionPings || 0,
+            onMyWay: p.onMyWayPings || 0,
+            push: p.pushPings || 0,
+            retreat: p.retreatPings || 0,
+            visionCleared: p.visionClearedPings || 0,
+          }
         }))
       }
     }));
@@ -94,11 +108,17 @@ export default async function handler(
             existingMatch?.info?.gameDuration && 
             existingMatch?.info?.gameMode && 
             existingMatch?.info?.participants) {
-          mergedMatches.push(existingMatch);
+          // Convert existingMatch to match the expected type
+          const updatedMatch: MatchInfo = {
+            info: {
+              ...existingMatch.info,
+              queueId: existingMatch.info.queueId ? existingMatch.info.queueId : null,
+            },
+          };
+          mergedMatches.push(updatedMatch);
         }
       }
     });
-    
     // Sort and limit to 20 most recent matches
     const sortedMatches = mergedMatches
       .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
@@ -191,13 +211,21 @@ async function fetchMatchDetails(puuid: string) {
   if (!matchesResponse.ok) return [];
   
   const matchIds = await matchesResponse.json();
+  console.log('Match IDs:', matchIds);
+  
   return Promise.all(
     matchIds.map(async (matchId: string) => {
       try {
-        const response = await fetchWithRetry(
-          `https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`
-        );
-        return response.ok ? response.json() : null;
+        const matchUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`;
+        console.log('Fetching match:', matchUrl);
+        
+        const response = await fetchWithRetry(matchUrl);
+        if (!response.ok) return null;
+        
+        const matchData = await response.json();
+        console.log('Complete participant data:', JSON.stringify(matchData.info.participants[0], null, 2));
+        
+        return matchData;
       } catch (error) {
         console.warn(`Failed to fetch match ${matchId}:`, error);
         return null;

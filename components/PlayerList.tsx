@@ -290,7 +290,7 @@ const MatchHistoryPreview = ({
                       <Group gap={8}>
                         <Avatar
                           size={32}
-                          src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/champion/${participant.championName}.png`}
+                          src={`https://ddragon.leagueoflegends.com/cdn/14.22.1/img/champion/${participant.championName}.png`}
                           radius="sm"
                         />
                         <Stack gap={0}>

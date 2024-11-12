@@ -1,6 +1,6 @@
 import React from 'react';
-import { Modal, Paper, Text, Group, Stack, Avatar } from '@mantine/core';
-import { IconSword, IconSkull, IconHandStop, IconX } from '@tabler/icons-react';
+import { Modal, Paper, Text, Group, Stack, Avatar, Tooltip } from '@mantine/core';
+import { IconSword, IconSkull, IconHandStop, IconX, IconQuestionMark } from '@tabler/icons-react';
 import playersData from '@/data/players.json';
 import { useMediaQuery } from '@mantine/hooks';
 
@@ -12,33 +12,50 @@ interface ScoreboardModalProps {
       gameDuration: number;
       gameMode: string;
       queueId?: number;
-      participants: {
+      participants: Array<{
         puuid: string;
-        championId: number;
         championName: string;
         kills: number;
         deaths: number;
         assists: number;
         win: boolean;
-      }[];
+        pings?: {
+          missing?: number;
+          danger?: number;
+          command?: number;
+          getBack?: number;
+          onMyWay?: number;
+        };
+      }>;
     };
-  };
+  } | null;
 }
 
-const getPlayerNameByUuid = (uuid: string): string => {
-  // Search through players.json to find matching UUID
-  for (const [gameName, playerData] of Object.entries(playersData.players)) {
-    if (playerData.puuid === uuid) {
-      return `${gameName}#${playerData.tagLine}`;
-    }
+const getPlayerNameByPuuid = (puuid: string) => {
+  const player = Object.values(playersData.players).find(p => p.puuid === puuid);
+  if (player) {
+    return `${player.gameName}#${player.tagLine}`;
   }
   return 'Unknown Player';
+};
+
+const getTotalPings = (pings: { [key: string]: number } | undefined) => {
+  if (!pings) return 0;
+  return Object.values(pings).reduce((sum: number, count: number) => sum + count, 0);
 };
 
 const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, match }) => {
   const isMobile = useMediaQuery('(max-width: 768px)');
 
-  if (!match?.info) return null;
+  if (!match || !match.info) {
+    return (
+      <Modal opened={opened} onClose={onClose} size="xl">
+        <Text>No match data available</Text>
+      </Modal>
+    );
+  }
+
+  console.log('Match participants:', match.info.participants);
 
   const team1 = match.info.participants.slice(0, 5);
   const team2 = match.info.participants.slice(5, 10);
@@ -74,7 +91,7 @@ const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, matc
     <Modal 
       opened={opened} 
       onClose={onClose} 
-      size={isMobile ? '100%' : 'lg'}
+      size={isMobile ? '100%' : 'xl'}
       radius="md"
       centered
       fullScreen={isMobile}
@@ -176,9 +193,42 @@ const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, matc
                         {player.championName}
                       </Text>
                       <Text size="xs" c="dimmed.4">
-                        {getPlayerNameByUuid(player.puuid)}
+                        {getPlayerNameByPuuid(player.puuid)}
                       </Text>
                     </Stack>
+                    {player.pings && getTotalPings(player.pings) > 0 && (
+                      <Tooltip 
+                        label={
+                          <div style={{ padding: isMobile ? 8 : 4 }}>
+                            {player.pings?.missing && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Missing: {player.pings.missing}</Text>
+                            )}
+                            {player.pings?.danger && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Danger: {player.pings.danger}</Text>
+                            )}
+                            {player.pings?.command && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Command: {player.pings.command}</Text>
+                            )}
+                            {player.pings?.getBack && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Get Back: {player.pings.getBack}</Text>
+                            )}
+                            {player.pings?.onMyWay && (
+                              <Text size={isMobile ? 'sm' : 'xs'}>On My Way: {player.pings.onMyWay}</Text>
+                            )}
+                          </div>
+                        }
+                        position={isMobile ? 'bottom' : 'right'}
+                        withArrow
+                        multiline
+                      >
+                        <Group gap={4} style={{ minWidth: isMobile ? 40 : 'auto' }}>
+                          <IconQuestionMark size={isMobile ? 16 : 14} />
+                          <Text size={isMobile ? 'sm' : 'xs'} c="dimmed">
+                            {getTotalPings(player.pings)}
+                          </Text>
+                        </Group>
+                      </Tooltip>
+                    )}
                   </Group>
                   <Group gap={8} wrap="nowrap">
                     <Group gap={2} wrap="nowrap">
@@ -241,9 +291,42 @@ const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, matc
                         {player.championName}
                       </Text>
                       <Text size="xs" c="dimmed.4">
-                        {getPlayerNameByUuid(player.puuid)}
+                        {getPlayerNameByPuuid(player.puuid)}
                       </Text>
                     </Stack>
+                    {player.pings && getTotalPings(player.pings) > 0 && (
+                      <Tooltip 
+                        label={
+                          <div style={{ padding: isMobile ? 8 : 4 }}>
+                            {player.pings?.missing && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Missing: {player.pings.missing}</Text>
+                            )}
+                            {player.pings?.danger && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Danger: {player.pings.danger}</Text>
+                            )}
+                            {player.pings?.command && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Command: {player.pings.command}</Text>
+                            )}
+                            {player.pings?.getBack && (
+                              <Text size={isMobile ? 'sm' : 'xs'} mb={2}>Get Back: {player.pings.getBack}</Text>
+                            )}
+                            {player.pings?.onMyWay && (
+                              <Text size={isMobile ? 'sm' : 'xs'}>On My Way: {player.pings.onMyWay}</Text>
+                            )}
+                          </div>
+                        }
+                        position={isMobile ? 'bottom' : 'right'}
+                        withArrow
+                        multiline
+                      >
+                        <Group gap={4} style={{ minWidth: isMobile ? 40 : 'auto' }}>
+                          <IconQuestionMark size={isMobile ? 16 : 14} />
+                          <Text size={isMobile ? 'sm' : 'xs'} c="dimmed">
+                            {getTotalPings(player.pings)}
+                          </Text>
+                        </Group>
+                      </Tooltip>
+                    )}
                   </Group>
                   <Group gap={8} wrap="nowrap">
                     <Group gap={2} wrap="nowrap">

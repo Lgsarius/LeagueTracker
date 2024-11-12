@@ -70,6 +70,7 @@ export default async function handler(
         gameCreation: match.info.gameCreation,
         gameDuration: match.info.gameDuration,
         gameMode: match.info.gameMode,
+        queueId: match.info.queueId,
         participants: match.info.participants.map((p: any) => ({
           puuid: p.puuid,
           championId: p.championId,

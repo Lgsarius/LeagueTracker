@@ -300,7 +300,7 @@ const MatchHistoryPreview = ({
                               {formatDistanceToNow(new Date(match.info.gameCreation))} ago
                             </Text>
                             <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
-                              {getReadableGameMode(match.info.gameMode)}
+                              {getReadableGameMode(match.info.gameMode, match.info.queueId)}
                             </Text>
                             <Text size="xs" c="dimmed" style={{ fontSize: '11px' }}>
                               Duration: {formattedDuration}
@@ -592,11 +592,24 @@ const StatusLabel = ({ type }: { type: 'fire' | 'tilt' }) => (
   </motion.div>
 );
 
-// Add this helper function
-const getReadableGameMode = (gameMode: string): string => {
+// Update this helper function
+const getReadableGameMode = (gameMode: string, queueId: number): string => {
+  if (gameMode === 'CLASSIC') {
+    switch (queueId) {
+      case 420:
+        return 'Ranked Solo/Duo';
+      case 440:
+        return 'Ranked Flex';
+      case 400:
+        return 'Normal Draft';
+      case 430:
+        return 'Normal Blind';
+      default:
+        return 'Normal';
+    }
+  }
+  
   switch (gameMode) {
-    case 'CLASSIC':
-      return 'Ranked/Normal';
     case 'ARAM':
       return 'ARAM';
     case 'URF':

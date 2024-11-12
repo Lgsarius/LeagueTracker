@@ -11,6 +11,7 @@ interface ScoreboardModalProps {
     info: {
       gameDuration: number;
       gameMode: string;
+      queueId?: number;
       participants: {
         puuid: string;
         championId: number;
@@ -48,9 +49,22 @@ const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, matc
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const getReadableGameMode = (mode: string) => {
+  const getReadableGameMode = (mode: string, queueId?: number) => {
+    // Queue IDs from Riot API
+    // 420 = Solo/Duo Ranked
+    // 440 = Flex Ranked
+    // 400 = Normal Draft
+    // 430 = Normal Blind
+    // 450 = ARAM
     switch (mode) {
-      case 'CLASSIC': return 'Summoner\'s Rift';
+      case 'CLASSIC':
+        switch (queueId) {
+          case 420: return 'Ranked Solo/Duo';
+          case 440: return 'Ranked Flex';
+          case 400: return 'Normal Draft';
+          case 430: return 'Normal Blind';
+          default: return 'Normal';
+        }
       case 'ARAM': return 'ARAM';
       default: return mode;
     }
@@ -104,7 +118,7 @@ const ScoreboardModal: React.FC<ScoreboardModalProps> = ({ opened, onClose, matc
         {/* Game Info */}
         <Group align="apart" px={4}>
           <Text size="sm" c="dimmed">
-            {getReadableGameMode(match.info.gameMode)}
+            {getReadableGameMode(match.info.gameMode, match.info.queueId)}
           </Text>
           <Text size="sm" c="dimmed">
             {formatDuration(match.info.gameDuration)}

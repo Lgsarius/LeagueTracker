@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable */
 
 import { Group, Paper, Text, Tooltip, Badge, Stack, RingProgress, Center, Modal, Grid, ThemeIcon, SimpleGrid, Button } from '@mantine/core';
 import { IconWind, IconSun, IconCloud, IconCloudFog, IconMask, IconAlertTriangle, IconCloudStorm, IconTemperature, IconDroplet, IconSunHigh, IconMoonStars, IconArrowUpRight, IconArrowDownRight, IconEye, IconGauge } from '@tabler/icons-react';

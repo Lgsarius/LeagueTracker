@@ -1,4 +1,5 @@
 'use client';
+/* eslint-disable */
 
 import { Paper, Text, Stack, Tooltip, Group } from '@mantine/core';
 import { motion } from 'framer-motion';

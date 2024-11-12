@@ -13,7 +13,7 @@ const CARD_STYLES = {
 
 const TIME_TEXT_STYLES = {
   fontFamily: 'JetBrains Mono, monospace',
-  fontSize: '2.5rem',
+  fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
   letterSpacing: '-2px',
 };
 
@@ -47,17 +47,22 @@ export function DigitalClock() {
   const month = time.toLocaleDateString('de-DE', { month: 'long' });
 
   return (
-    <Stack align="center" gap={4}>
+    <Stack align="center" gap={4} w="100%">
       {/* Date Display */}
-      <Group gap={8}>
+      <Group gap={8} style={{ flexWrap: 'nowrap' }}>
         <IconCalendarEvent size={16} style={{ color: '#5c5f66' }} />
-        <Text size="sm" c="dimmed" fw={500}>
+        <Text 
+          size="sm" 
+          c="dimmed" 
+          fw={500}
+          style={{ whiteSpace: 'nowrap' }}
+        >
           {dayName}, {monthDay}. {month}
         </Text>
       </Group>
 
       {/* Time Display */}
-      <Group gap={0} style={{ userSelect: 'none' }}>
+      <Group gap={0} style={{ userSelect: 'none' }} justify="center" w="100%">
         {/* Hours */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -83,7 +88,7 @@ export function DigitalClock() {
             opacity: blinkColon ? 1 : 0.3,
             transition: 'opacity 0.2s',
             margin: '0 4px',
-            fontSize: '2.5rem',
+            fontSize: 'clamp(1.5rem, 5vw, 2.5rem)',
             color: '#5c5f66'
           }}
         >
@@ -120,7 +125,7 @@ export function DigitalClock() {
             fw={500}
             style={{ 
               fontFamily: 'JetBrains Mono, monospace',
-              fontSize: '1.2rem',
+              fontSize: 'clamp(0.8rem, 3vw, 1.2rem)',
             }}
           >
             {seconds}
@@ -129,7 +134,7 @@ export function DigitalClock() {
       </Group>
 
       {/* Week Information */}
-      <Text size="xs" c="dimmed">
+      <Text size="xs" c="dimmed" style={{ whiteSpace: 'nowrap' }}>
         Woche {getWeekNumber(time)} • Tag {getDayOfYear(time)}
       </Text>
     </Stack>

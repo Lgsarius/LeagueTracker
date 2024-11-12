@@ -1,15 +1,16 @@
- 'use client';
+'use client';
 /* eslint-disable */
 
 
-import { Container, AppShell, Title, Text, Box, Group, Paper, SimpleGrid, Progress } from '@mantine/core';
+import { Container, AppShell, Title, Text, Box, Group, Paper, SimpleGrid, Progress, Button } from '@mantine/core';
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import playersData from '@/data/players.json';
 import summonerTags from '@/data/summoner-tags.json';
 import { CARD_STYLES } from '@/components/PlayerList';
-import { IconTrophy, IconClock, IconSword, IconSkull, IconHandStop } from '@tabler/icons-react';
+import { IconTrophy, IconClock, IconSword, IconSkull, IconHandStop, IconArrowLeft } from '@tabler/icons-react';
+import { useRouter } from 'next/navigation';
 
 interface SpielerMatchStatistiken {
   spielerName: string;
@@ -90,6 +91,7 @@ const getChampionIconUrl = (championName: string) => {
 };
 
 export default function StatistikSeite() {
+  const router = useRouter();
   const [statistiken, setStatistiken] = useState<GlobaleStatistiken | null>(null);
 
   useEffect(() => {
@@ -500,6 +502,16 @@ export default function StatistikSeite() {
           py="xl"
           px={{ base: 'md', sm: 40 }}
         >
+          <Button
+            variant="gradient"
+            gradient={{ from: 'blue', to: 'cyan' }}
+            leftSection={<IconArrowLeft size={16} />}
+            mb="xl"
+            onClick={() => router.push('/')}
+          >
+            Zurück zur Übersicht
+          </Button>
+
           {/* Hero Section */}
           <Paper
             radius="lg"

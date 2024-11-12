@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable */
-import { Container, AppShell, Title, Text, Box, Group, Paper, Button, Badge } from '@mantine/core';
+import { Container, AppShell, Title, Text, Box, Group, Paper, Button, Badge, Stack } from '@mantine/core';
 import { PlayerList } from '@/components/PlayerList';
 import { useState, useEffect } from 'react';
 import { PlayerData } from '@/types/player';
@@ -273,62 +273,73 @@ export default function HomePage() {
                 border: '1px solid rgba(255,255,255,0.1)',
               }}
             >
-              <Group justify="space-between" align="center">
-                <Group align="center" gap="md">
-                  <Image 
-                    src="/LOGO.png"
-                    alt="LostGames Logo"
-                    width={80}
-                    height={80}
-                    style={{
-                      borderRadius: '50%',
-                      objectFit: 'cover',
-                    }}
-                  />
-                  <Box>
-                    <Title 
-                      order={1}
-                      size={48}
-                      fw={900}
-                      variant="gradient" 
-                
-                    >
-                      LostGames LoL Tracker
-                    </Title>
-                    <Group align="center" gap="xl" mt="md">
-                      <Text c="dimmed" size="xl">
-                        Alle LostGames LoL Spieler
-                      </Text>
-                      <Badge 
-                        size="lg" 
-                        variant="gradient" 
-                        gradient={{ from: 'blue', to: 'cyan' }}
-                      >
-                        {players.length} Accounts
-                      </Badge>
-                    </Group>
-                  </Box>
-                </Group>
-                
-                {/* Digital Clock */}
-                <Paper
-                  p="xl"
-                  radius="md"
-                  style={{
-                    background: 'rgba(0,0,0,0.2)',
-                    border: '1px solid rgba(255,255,255,0.1)',
-                    backdropFilter: 'blur(8px)',
-                    minWidth: '300px',
-                    transition: 'transform 0.2s, box-shadow 0.2s',
-                    '&:hover': {
-                      transform: 'translateY(-2px)',
-                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                    },
-                  }}
+              {/* Main Content */}
+              <Stack gap="xl">
+                {/* Header Group */}
+                <Group 
+                  justify="space-between" 
+                  align="center" 
+              
                 >
-                  <DigitalClock />
-                </Paper>
-              </Group>
+                  {/* Logo and Title */}
+                  <Group gap="md" wrap="nowrap">
+                    <Image 
+                      src="/LOGO.png"
+                      alt="LostGames Logo"
+                      width={80}
+                      height={80}
+                      style={{
+                        borderRadius: '50%',
+                        objectFit: 'cover',
+                      }}
+                    />
+                    <Box>
+                      <Title 
+                        order={1}
+                      
+                        fw={900}
+                        variant="gradient"
+                       
+                      >
+                        LostGames LoL Tracker
+                      </Title>
+                      <Group align="center" gap="xl" mt="md">
+                        <Text c="dimmed" size="lg">
+                          Alle LostGames LoL Spieler
+                        </Text>
+                        <Badge 
+                          size="lg" 
+                          variant="gradient" 
+                          gradient={{ from: 'blue', to: 'cyan' }}
+                        >
+                          {players.length} Accounts
+                        </Badge>
+                      </Group>
+                    </Box>
+                  </Group>
+
+                  {/* Digital Clock - Hidden on Mobile */}
+                  <Paper
+                    p="xl"
+                    radius="md"
+                    style={{
+                      background: 'rgba(0,0,0,0.2)',
+                      border: '1px solid rgba(255,255,255,0.1)',
+                      backdropFilter: 'blur(8px)',
+                      minWidth: '300px',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                      '&:hover': {
+                        transform: 'translateY(-2px)',
+                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                      },
+                    }}
+                    hiddenFrom="sm"
+                    visibleFrom="sm"
+                  >
+                    <DigitalClock />
+                  </Paper>
+                </Group>
+              </Stack>
             </Paper>
 
             {/* Status Messages */}

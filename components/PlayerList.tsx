@@ -13,7 +13,6 @@ import { differenceInHours } from 'date-fns';
 import ScoreboardModal from './ScoreboardModal'; // Import the new modal component
 import { useRouter } from 'next/navigation';
 import { EnvironmentStats } from './EnvironmentStats';
-import { DigitalClock } from './DigitalClock';
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -1016,7 +1015,6 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
           >
             Bestenliste
           </Button>
-          <DigitalClock />
           <EnvironmentStats />
         </Group>
 

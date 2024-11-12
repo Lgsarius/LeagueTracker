@@ -7,7 +7,7 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 // Add your API key as an environment variable in .env.local
-const OPENWEATHER_API_KEY = process.env.NEXT_PUBLIC_OPENWEATHER_API_KEY;
+const OPENWEATHER_API_KEY = "2387980dc102d963d63ab5d53ebf8082";
 
 type AirQualityData = {
   city: string;

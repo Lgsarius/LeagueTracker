@@ -12,6 +12,8 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { differenceInHours } from 'date-fns';
 import ScoreboardModal from './ScoreboardModal'; // Import the new modal component
 import { useRouter } from 'next/navigation';
+import { EnvironmentStats } from './EnvironmentStats';
+import { DigitalClock } from './DigitalClock';
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -58,6 +60,10 @@ const MATCH_PREVIEW_COUNT = 10;
 
 // Update the constants
 const ANALYSIS_MATCH_COUNT = 5; // New constant for analysis
+
+// Add time constants
+const MOOD_RESET_HOURS = 12; // Reset mood after 12 hours of inactivity
+const LONG_BREAK_HOURS = 24; // Show "Taking a Break" after 24 hours
 
 // Add this new component for the animated alert
 const AnimatedAlert = ({ type }: { type: 'tilt' | 'hobbylos' }) => {
@@ -1010,6 +1016,8 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
           >
             Bestenliste
           </Button>
+          <DigitalClock />
+          <EnvironmentStats />
         </Group>
 
         <Group>
@@ -1100,7 +1108,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
               <Group wrap="nowrap" mb="xs">
                 <Avatar
                   size={48}
-                  src={`https://ddragon.leagueoflegends.com/cdn/13.24.1/img/profileicon/${player.summoner.profileIconId}.png`}
+                  src={`https://ddragon.leagueoflegends.com/cdn/14.22.1/img/profileicon/${player.summoner.profileIconId}.png`}
                   radius="xl"
                 />
                 <div style={{ flex: 1 }}>
@@ -1168,23 +1176,23 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                             background: queue.tier === 'IRON' 
                               ? `url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR7mz3iLydD6sk14wva3SIld4dGKruvT7JBz5mWGabCHJ2C3_n8ta7KVWfebATQNlwwSpM&usqp=CAU') center/cover`
                               : queue.tier === 'BRONZE'
-                              ? 'linear-gradient(45deg, #95604c, #6e4b3c)'
+                              ? 'linear-gradient(to right, #95604c, #6e4b3c)'
                               : queue.tier === 'SILVER'
-                              ? 'linear-gradient(45deg, #a1b5c7, #7b8792)'
+                              ? 'linear-gradient(to right, #a1b5c7, #7b8792)'
                               : queue.tier === 'GOLD'
-                              ? 'linear-gradient(45deg, #f1c859, #c89b3c)'
+                              ? 'linear-gradient(to right, #f1c859, #c89b3c)'
                               : queue.tier === 'PLATINUM'
-                              ? 'linear-gradient(45deg, #00a0b0, #008891)'
+                              ? 'linear-gradient(to right, #00a0b0, #008891)'
                               : queue.tier === 'EMERALD'
-                              ? 'linear-gradient(45deg, #16a75c, #0d7740)'
+                              ? 'linear-gradient(to right, #16a75c, #0d7740)'
                               : queue.tier === 'DIAMOND'
-                              ? 'linear-gradient(45deg, #576ace, #1f42b5)'
+                              ? '#1f42b5' // Simplified to solid color for better iOS compatibility
                               : queue.tier === 'MASTER'
-                              ? 'linear-gradient(45deg, #9d48e0, #6925af)'
+                              ? 'linear-gradient(to right, #9d48e0, #6925af)'
                               : queue.tier === 'GRANDMASTER'
-                              ? 'linear-gradient(45deg, #e0484e, #a91419)'
+                              ? 'linear-gradient(to right, #e0484e, #a91419)'
                               : queue.tier === 'CHALLENGER'
-                              ? 'linear-gradient(45deg, #39b7ff, #0d6fb8)'
+                              ? 'linear-gradient(to right, #39b7ff, #0d6fb8)'
                               : undefined,
                             border: queue.tier === 'IRON' ? '1px solid #724b28' : undefined,
                             color: '#fff',
@@ -1192,6 +1200,8 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                             padding: '4px 8px',
                             fontWeight: 600,
                             letterSpacing: '0.5px',
+                            WebkitBackfaceVisibility: 'hidden', // Add this for better iOS rendering
+                            WebkitTransform: 'translateZ(0)', // Add this for better iOS rendering
                           }}
                           size="sm"
                         >
@@ -1278,15 +1288,20 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
                 lastGameTime={getLastGameTime(player)} 
                 lastGameDuration={player.recentMatches ? getFormattedDuration(player.recentMatches[0]) : undefined}
               />
+              
+              {/* Add a Group for stats */}
+              <Group mt="xs" gap="xs">
+                <TiltMeter 
+                  matches={player.recentMatches || []} 
+                  puuid={player.summoner.puuid}
+                />
+                <AramGamerBadge matches={player.recentMatches || []} />
+              </Group>
+
               <TrendIndicator 
                 matches={player.recentMatches || []} 
                 puuid={player.summoner.puuid}
               />
-              <TiltMeter 
-                matches={player.recentMatches || []} 
-                puuid={player.summoner.puuid}
-              />
-              <AramGamerBadge matches={player.recentMatches || []} />
             </Paper>
           );
         })}

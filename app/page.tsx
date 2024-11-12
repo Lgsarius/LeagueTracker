@@ -1,6 +1,6 @@
 'use client';
 /* eslint-disable */
-import { Container, AppShell, Title, Text, Box, Group, Paper, Button } from '@mantine/core';
+import { Container, AppShell, Title, Text, Box, Group, Paper, Button, Badge } from '@mantine/core';
 import { PlayerList } from '@/components/PlayerList';
 import { useState, useEffect } from 'react';
 import { PlayerData } from '@/types/player';
@@ -10,6 +10,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
+import { DigitalClock } from '@/components/DigitalClock';
 
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
@@ -266,8 +267,13 @@ export default function HomePage() {
               radius="lg"
               p={{ base: 'md', sm: 'xl' }}
               mb={50}
+              style={{
+                background: 'linear-gradient(to right, rgba(26,27,30,0.95), rgba(26,27,30,0.8))',
+                backdropFilter: 'blur(10px)',
+                border: '1px solid rgba(255,255,255,0.1)',
+              }}
             >
-              <Group justify="space-between" align="flex-start">
+              <Group justify="space-between" align="center">
                 <Group align="center" gap="md">
                   <Image 
                     src="/LOGO.png"
@@ -284,18 +290,44 @@ export default function HomePage() {
                       order={1}
                       size={48}
                       fw={900}
-                      variant="gradient"
+                      variant="gradient" 
+                
                     >
                       LostGames LoL Tracker
                     </Title>
-                    <Text c="dimmed" mt="md" size="xl" maw={600}>
-                      Alle LostGames LoL Spieler
-                    </Text>
-                    <Text c="dimmed.4" mt="sm" size="md">
-                      Aktuelle Anzahl an Accounts: {players.length}
-                    </Text>
+                    <Group align="center" gap="xl" mt="md">
+                      <Text c="dimmed" size="xl">
+                        Alle LostGames LoL Spieler
+                      </Text>
+                      <Badge 
+                        size="lg" 
+                        variant="gradient" 
+                        gradient={{ from: 'blue', to: 'cyan' }}
+                      >
+                        {players.length} Accounts
+                      </Badge>
+                    </Group>
                   </Box>
                 </Group>
+                
+                {/* Digital Clock */}
+                <Paper
+                  p="xl"
+                  radius="md"
+                  style={{
+                    background: 'rgba(0,0,0,0.2)',
+                    border: '1px solid rgba(255,255,255,0.1)',
+                    backdropFilter: 'blur(8px)',
+                    minWidth: '300px',
+                    transition: 'transform 0.2s, box-shadow 0.2s',
+                    '&:hover': {
+                      transform: 'translateY(-2px)',
+                      boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
+                    },
+                  }}
+                >
+                  <DigitalClock />
+                </Paper>
               </Group>
             </Paper>
 

@@ -1,4 +1,4 @@
-'use client';
+ 'use client';
 /* eslint-disable */
 
 
@@ -11,72 +11,72 @@ import summonerTags from '@/data/summoner-tags.json';
 import { CARD_STYLES } from '@/components/PlayerList';
 import { IconTrophy, IconClock, IconSword, IconSkull, IconHandStop } from '@tabler/icons-react';
 
-interface PlayerMatchStats {
-  playerName: string;
-  gamesPlayed: number;
-  wins: number;
-  losses: number;
+interface SpielerMatchStatistiken {
+  spielerName: string;
+  gespielteSpielen: number;
+  siege: number;
+  niederlagen: number;
   kills: number;
-  deaths: number;
+  tode: number;
   assists: number;
-  averageGameTime: number;
-  mostPlayedChampion: {
+  durchschnittlicheSpielzeit: number;
+  meistGespielterChampion: {
     name: string;
-    games: number;
-    winRate: number;
+    spiele: number;
+    siegesRate: number;
   };
-  aramGames: number;
-  totalPings: number;
-  winStreak: number;
-  loseStreak: number;
+  aramSpiele: number;
+  gesamtPings: number;
+  siegesSerie: number;
+  niederlagenSerie: number;
 }
 
-interface GlobalStats {
-  totalGames: number;
-  averageGameTime: number;
-  mostActivePlayer: {
+interface GlobaleStatistiken {
+  gesamtSpiele: number;
+  durchschnittlicheSpielzeit: number;
+  aktivsterSpieler: {
     name: string;
-    games: number;
+    spiele: number;
   };
-  highestWinrate: {
+  höchsteSiegRate: {
     name: string;
-    winrate: number;
-    games: number;
+    siegRate: number;
+    spiele: number;
   };
-  mostPings: {
+  meistePings: {
     name: string;
     pings: number;
   };
-  bestKDA: {
+  besteKDA: {
     name: string;
     kda: number;
   };
-  longestWinStreak: {
+  längsteSiegesserie: {
     name: string;
-    streak: number;
+    serie: number;
   };
-  longestLoseStreak: {
+  längsteNiederlagenserie: {
     name: string;
-    streak: number;
+    serie: number;
   };
-  playerStats: PlayerMatchStats[];
-  championStats: {
+  spielerStatistiken: SpielerMatchStatistiken[];
+  championStatistiken: {
     name: string;
-    games: number;
-    wins: number;
+    spiele: number;
+    siege: number;
     kills: number;
-    deaths: number;
+    tode: number;
     assists: number;
   }[];
 }
 
-// Helper function for win rate colors (using Mantine color strings)
-const getWinRateColor = (winRate: number): string => {
-  if (winRate >= 65) return 'yellow';    // Exceptional
-  if (winRate >= 55) return 'teal';      // Very Good
-  if (winRate >= 50) return 'blue';      // Good
-  if (winRate >= 45) return 'orange';    // Fair
-  return 'red';                          // Poor
+// Hilfsfunktion für Siegesraten-Farben
+const getSiegRateColor = (siegRate: number): string => {
+  if (siegRate >= 65) return 'yellow';    // Außergewöhnlich
+  if (siegRate >= 55) return 'teal';      // Sehr Gut
+  if (siegRate >= 50) return 'blue';      // Gut
+  if (siegRate >= 45) return 'orange';    // Mittelmäßig
+  return 'red';                           // Schlecht
 };
 
 // Add these constants at the top of your file
@@ -89,15 +89,15 @@ const getChampionIconUrl = (championName: string) => {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${championName.toLowerCase()}.png`;
 };
 
-export default function StatsPage() {
-  const [stats, setStats] = useState<GlobalStats | null>(null);
+export default function StatistikSeite() {
+  const [statistiken, setStatistiken] = useState<GlobaleStatistiken | null>(null);
 
   useEffect(() => {
     calculateStats();
   }, []);
 
   const calculateStats = () => {
-    const playerStats: PlayerMatchStats[] = [];
+    const playerStats: SpielerMatchStatistiken[] = [];
     let totalGamesAll = 0;
     let totalGameTime = 0;
     const championData: { [key: string]: { name: string; games: number; wins: number; kills: number; deaths: number; assists: number; } } = {};
@@ -187,23 +187,23 @@ export default function StatsPage() {
         .sort(([, a], [, b]) => b.games - a.games)[0];
 
       playerStats.push({
-        playerName,
-        gamesPlayed: matches.length,
-        wins,
-        losses: matches.length - wins,
+        spielerName: playerName,
+        gespielteSpielen: matches.length,
+        siege: wins,
+        niederlagen: matches.length - wins,
         kills,
-        deaths,
+        tode: deaths,
         assists,
-        averageGameTime: gameTime / matches.length,
-        mostPlayedChampion: {
+        durchschnittlicheSpielzeit: gameTime / matches.length,
+        meistGespielterChampion: {
           name: mostPlayed[0],
-          games: mostPlayed[1].games,
-          winRate: (mostPlayed[1].wins / mostPlayed[1].games) * 100,
+          spiele: mostPlayed[1].games,
+          siegesRate: (mostPlayed[1].wins / mostPlayed[1].games) * 100,
         },
-        aramGames,
-        totalPings,
-        winStreak: maxWinStreak,
-        loseStreak: maxLoseStreak,
+        aramSpiele: aramGames,
+        gesamtPings: totalPings,
+        siegesSerie: maxWinStreak,
+        niederlagenSerie: maxLoseStreak,
       });
 
       totalGamesAll += matches.length;
@@ -213,61 +213,69 @@ export default function StatsPage() {
     // Sort champion data
     const sortedChampions = Object.values(championData)
       .sort((a, b) => b.games - a.games)
-      .slice(0, 10);
+      .slice(0, 10)
+      .map(champ => ({
+        name: champ.name,
+        spiele: champ.games,
+        siege: champ.wins,
+        kills: champ.kills,
+        tode: champ.deaths,
+        assists: champ.assists
+      }));
 
     // Find global stats
     const mostActive = playerStats.reduce((prev, current) => 
-      prev.gamesPlayed > current.gamesPlayed ? prev : current
+      prev.gespielteSpielen > current.gespielteSpielen ? prev : current
     );
 
     const highestWinrate = playerStats.reduce((prev, current) => 
-      (current.gamesPlayed >= 10 && (current.wins / current.gamesPlayed) > (prev.wins / prev.gamesPlayed)) 
+      (current.gespielteSpielen >= 10 && (current.siege / current.gespielteSpielen) > (prev.siege / prev.gespielteSpielen)) 
         ? current 
         : prev
     );
 
     const bestKDA = playerStats.reduce((prev, current) => {
-      const prevKDA = (prev.kills + prev.assists) / Math.max(prev.deaths, 1);
-      const currentKDA = (current.kills + current.assists) / Math.max(current.deaths, 1);
+      const prevKDA = (prev.kills + prev.assists) / Math.max(prev.tode, 1);
+      const currentKDA = (current.kills + current.assists) / Math.max(current.tode, 1);
       return currentKDA > prevKDA ? current : prev;
     });
 
-    setStats({
-      totalGames: totalGamesAll,
-      averageGameTime: totalGameTime / totalGamesAll,
-      mostActivePlayer: {
-        name: mostActive.playerName,
-        games: mostActive.gamesPlayed,
+    setStatistiken({
+      gesamtSpiele: totalGamesAll,
+      durchschnittlicheSpielzeit: totalGameTime / totalGamesAll,
+      aktivsterSpieler: {
+        name: mostActive.spielerName,
+        spiele: mostActive.gespielteSpielen,
       },
-      highestWinrate: {
-        name: highestWinrate.playerName,
-        winrate: (highestWinrate.wins / highestWinrate.gamesPlayed) * 100,
-        games: highestWinrate.gamesPlayed,
+      höchsteSiegRate: {
+        name: highestWinrate.spielerName,
+        siegRate: (highestWinrate.siege / highestWinrate.gespielteSpielen) * 100,
+        spiele: highestWinrate.gespielteSpielen,
       },
-      mostPings: {
+      meistePings: {
         name: playerStats.reduce((prev, current) => 
-          current.totalPings > prev.totalPings ? current : prev
-        ).playerName,
-        pings: Math.max(...playerStats.map(p => p.totalPings)),
+          current.gesamtPings > prev.gesamtPings ? current : prev
+        ).spielerName,
+        pings: Math.max(...playerStats.map(p => p.gesamtPings)),
       },
-      bestKDA: {
-        name: bestKDA.playerName,
-        kda: (bestKDA.kills + bestKDA.assists) / Math.max(bestKDA.deaths, 1),
+      besteKDA: {
+        name: bestKDA.spielerName,
+        kda: (bestKDA.kills + bestKDA.assists) / Math.max(bestKDA.tode, 1),
       },
-      longestWinStreak: {
+      längsteSiegesserie: {
         name: playerStats.reduce((prev, current) => 
-          current.winStreak > prev.winStreak ? current : prev
-        ).playerName,
-        streak: Math.max(...playerStats.map(p => p.winStreak)),
+          current.siegesSerie > prev.siegesSerie ? current : prev
+        ).spielerName,
+        serie: Math.max(...playerStats.map(p => p.siegesSerie)),
       },
-      longestLoseStreak: {
+      längsteNiederlagenserie: {
         name: playerStats.reduce((prev, current) => 
-          current.loseStreak > prev.loseStreak ? current : prev
-        ).playerName,
-        streak: Math.max(...playerStats.map(p => p.loseStreak)),
+          current.niederlagenSerie > prev.niederlagenSerie ? current : prev
+        ).spielerName,
+        serie: Math.max(...playerStats.map(p => p.niederlagenSerie)),
       },
-      playerStats,
-      championStats: sortedChampions,
+      spielerStatistiken: playerStats,
+      championStatistiken: sortedChampions,
     });
   };
 
@@ -277,39 +285,39 @@ export default function StatsPage() {
     return `${minutes}:${remainingSeconds.toString().padStart(2, '0')}`;
   };
 
-  const StatCard = ({ 
-    title, 
-    value, 
-    description, 
+  const StatistikKarte = ({ 
+    titel, 
+    wert, 
+    beschreibung, 
     icon 
   }: { 
-    title: string; 
-    value: string | number; 
-    description?: string;
+    titel: string; 
+    wert: string | number; 
+    beschreibung?: string;
     icon?: React.ReactNode;
   }) => (
     <Paper p="md" radius="md" style={CARD_STYLES}>
       <Group align="center" mb={8}>
         {icon}
-        <Text size="lg" fw={700}>{title}</Text>
+        <Text size="lg" fw={700}>{titel}</Text>
       </Group>
       <Text size="xl" fw={900} variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
-        {value}
+        {wert}
       </Text>
-      {description && (
-        <Text size="sm" c="dimmed" mt={4}>{description}</Text>
+      {beschreibung && (
+        <Text size="sm" c="dimmed" mt={4}>{beschreibung}</Text>
       )}
     </Paper>
   );
 
-  const PlayerStatCard = ({ player }: { player: PlayerMatchStats }) => (
+  const SpielerStatistikKarte = ({ spieler }: { spieler: SpielerMatchStatistiken }) => (
     <Paper p="md" radius="md" style={CARD_STYLES}>
       <Group align="center" mb="md">
         <Image
           src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${
-            playersData.players[player.playerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
+            playersData.players[spieler.spielerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
           }.png`}
-          alt={player.playerName}
+          alt={spieler.spielerName}
           width={48}
           height={48}
           style={{ borderRadius: '50%' }}
@@ -319,27 +327,27 @@ export default function StatsPage() {
           }}
         />
         <Box>
-          <Text size="lg" fw={700}>{player.playerName.split('#')[0]}</Text>
+          <Text size="lg" fw={700}>{spieler.spielerName.split('#')[0]}</Text>
           <Group gap={6}>
-            <Text size="sm" c="dimmed">Games: {player.gamesPlayed}</Text>
-            <Text size="sm" c={`${getWinRateColor(player.wins / player.gamesPlayed * 100)}.6`}>
-              {((player.wins / player.gamesPlayed) * 100).toFixed(1)}% WR
+            <Text size="sm" c="dimmed">Spiele: {spieler.gespielteSpielen}</Text>
+            <Text size="sm" c={`${getSiegRateColor(spieler.siege / spieler.gespielteSpielen * 100)}.6`}>
+              {((spieler.siege / spieler.gespielteSpielen) * 100).toFixed(1)}% WR
             </Text>
           </Group>
         </Box>
       </Group>
       <Progress.Root size="xl" mb="md">
         <Progress.Section 
-          value={(player.wins / player.gamesPlayed) * 100}
+          value={(spieler.siege / spieler.gespielteSpielen) * 100}
           color="teal"
         >
-          <Progress.Label>Wins: {player.wins}</Progress.Label>
+          <Progress.Label>Siege: {spieler.siege}</Progress.Label>
         </Progress.Section>
         <Progress.Section
-          value={(player.losses / player.gamesPlayed) * 100}
+          value={(spieler.niederlagen / spieler.gespielteSpielen) * 100}
           color="red"
         >
-          <Progress.Label>Losses: {player.losses}</Progress.Label>
+          <Progress.Label>Niederlagen: {spieler.niederlagen}</Progress.Label>
         </Progress.Section>
       </Progress.Root>
       <Group grow>
@@ -348,24 +356,24 @@ export default function StatsPage() {
           <Group gap={4}>
             <Group gap={2} wrap="nowrap">
               <IconSword size={14} style={{ color: '#2dd4bf' }} />
-              <Text size="sm" fw={500} c="teal.4">{player.kills}</Text>
+              <Text size="sm" fw={500} c="teal.4">{spieler.kills}</Text>
             </Group>
             <Group gap={2} wrap="nowrap">
               <IconSkull size={14} style={{ color: '#f87171' }} />
-              <Text size="sm" fw={500} c="red.4">{player.deaths}</Text>
+              <Text size="sm" fw={500} c="red.4">{spieler.tode}</Text>
             </Group>
             <Group gap={2} wrap="nowrap">
               <IconHandStop size={14} style={{ color: '#60a5fa' }} />
-              <Text size="sm" fw={500} c="blue.4">{player.assists}</Text>
+              <Text size="sm" fw={500} c="blue.4">{spieler.assists}</Text>
             </Group>
           </Group>
         </Box>
         <Box>
-          <Text size="sm" c="dimmed">Most Played</Text>
+          <Text size="sm" c="dimmed">Meist gespielt</Text>
           <Group gap={4}>
             <Image
-              src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${player.mostPlayedChampion.name}.png`}
-              alt={player.mostPlayedChampion.name}
+              src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/champion/${spieler.meistGespielterChampion.name}.png`}
+              alt={spieler.meistGespielterChampion.name}
               width={24}
               height={24}
               style={{ borderRadius: '4px' }}
@@ -375,7 +383,7 @@ export default function StatsPage() {
               }}
             />
             <Text size="sm" fw={500}>
-              {player.mostPlayedChampion.name}
+              {spieler.meistGespielterChampion.name}
             </Text>
           </Group>
         </Box>
@@ -383,7 +391,7 @@ export default function StatsPage() {
     </Paper>
   );
 
-  const ChampionStatCard = ({ champion }: { champion: GlobalStats['championStats'][0] }) => (
+  const ChampionStatistikKarte = ({ champion }: { champion: GlobaleStatistiken['championStatistiken'][0] }) => (
     <Paper p="md" radius="md" style={CARD_STYLES}>
       <Group align="center" mb="md">
         <Image
@@ -399,14 +407,14 @@ export default function StatsPage() {
         />
         <Box>
           <Text size="lg" fw={700}>{champion.name}</Text>
-          <Text size="sm" c="dimmed">{champion.games} games played</Text>
+          <Text size="sm" c="dimmed">{champion.spiele} Spiele gespielt</Text>
         </Box>
       </Group>
       <SimpleGrid cols={2} spacing="xs">
         <Paper p="xs" radius="sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
-          <Text size="sm" c="dimmed">Win Rate</Text>
-          <Text size="lg" fw={500} c={`${getWinRateColor(champion.wins / champion.games * 100)}.6`}>
-            {((champion.wins / champion.games) * 100).toFixed(1)}%
+          <Text size="sm" c="dimmed">Siegrate</Text>
+          <Text size="lg" fw={500} c={`${getSiegRateColor(champion.siege / champion.spiele * 100)}.6`}>
+            {((champion.siege / champion.spiele) * 100).toFixed(1)}%
           </Text>
         </Paper>
         <Paper p="xs" radius="sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.03)' }}>
@@ -414,17 +422,17 @@ export default function StatsPage() {
           <Group gap={4}>
             <Group gap={2} wrap="nowrap">
               <IconSword size={14} style={{ color: '#2dd4bf' }} />
-              <Text size="sm" fw={500} c="teal.4">{(champion.kills / champion.games).toFixed(1)}</Text>
+              <Text size="sm" fw={500} c="teal.4">{(champion.kills / champion.spiele).toFixed(1)}</Text>
             </Group>
             <Text fw={500}>/</Text>
             <Group gap={2} wrap="nowrap">
               <IconSkull size={14} style={{ color: '#f87171' }} />
-              <Text size="sm" fw={500} c="red.4">{(champion.deaths / champion.games).toFixed(1)}</Text>
+              <Text size="sm" fw={500} c="red.4">{(champion.tode / champion.spiele).toFixed(1)}</Text>
             </Group>
             <Text fw={500}>/</Text>
             <Group gap={2} wrap="nowrap">
               <IconHandStop size={14} style={{ color: '#60a5fa' }} />
-              <Text size="sm" fw={500} c="blue.4">{(champion.assists / champion.games).toFixed(1)}</Text>
+              <Text size="sm" fw={500} c="blue.4">{(champion.assists / champion.spiele).toFixed(1)}</Text>
             </Group>
           </Group>
         </Paper>
@@ -432,30 +440,30 @@ export default function StatsPage() {
     </Paper>
   );
 
-  const AchievementCard = ({ 
-    title, 
-    value, 
-    playerName, 
+  const ErrungenschaftKarte = ({ 
+    titel, 
+    wert, 
+    spielerName, 
     icon,
-    description 
+    beschreibung 
   }: { 
-    title: string;
-    value: string | number;
-    playerName: string;
+    titel: string;
+    wert: string | number;
+    spielerName: string;
     icon: React.ReactNode;
-    description?: string;
+    beschreibung?: string;
   }) => (
     <Paper p="md" radius="md" style={CARD_STYLES}>
       <Group align="center" mb={8}>
         {icon}
-        <Text size="lg" fw={700}>{title}</Text>
+        <Text size="lg" fw={700}>{titel}</Text>
       </Group>
       <Group align="center" mb={8}>
         <Image
           src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${
-            playersData.players[playerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
+            playersData.players[spielerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
           }.png`}
-          alt={playerName}
+          alt={spielerName}
           width={32}
           height={32}
           style={{ borderRadius: '50%' }}
@@ -466,13 +474,13 @@ export default function StatsPage() {
         />
         <Box>
           <Text size="xl" fw={900} variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
-            {value}
+            {wert}
           </Text>
-          <Text size="sm" c="dimmed">{playerName.split('#')[0]}</Text>
+          <Text size="sm" c="dimmed">{spielerName.split('#')[0]}</Text>
         </Box>
       </Group>
-      {description && (
-        <Text size="sm" c="dimmed" mt={4}>{description}</Text>
+      {beschreibung && (
+        <Text size="sm" c="dimmed" mt={4}>{beschreibung}</Text>
       )}
     </Paper>
   );
@@ -528,73 +536,73 @@ export default function StatsPage() {
             </Group>
           </Paper>
 
-          {stats && (
+          {statistiken && (
             <>
               {/* Global Stats */}
-              <Title order={2} size="h3" mb="md" c="dimmed">Global Statistics</Title>
+              <Title order={2} size="h3" mb="md" c="dimmed">Globale Statistiken</Title>
               <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg" mb="xl">
-                <StatCard
-                  title="Total Games"
-                  value={stats.totalGames}
-                  description="Across all players"
+                <StatistikKarte
+                  titel="Gesamt Spiele"
+                  wert={statistiken.gesamtSpiele}
+                  beschreibung="Über alle Spieler"
                   icon={<IconTrophy size={24} color="var(--mantine-color-yellow-6)" />}
                 />
-                <StatCard
-                  title="Average Game Time"
-                  value={formatTime(stats.averageGameTime)}
-                  description="Per match"
+                <StatistikKarte
+                  titel="Durchschnittliche Spielzeit"
+                  wert={formatTime(statistiken.durchschnittlicheSpielzeit)}
+                  beschreibung="Pro Match"
                   icon={<IconClock size={24} color="var(--mantine-color-blue-6)" />}
                 />
-                <StatCard
-                  title="Most Active Player"
-                  value={stats.mostActivePlayer.name.split('#')[0]}
-                  description={`${stats.mostActivePlayer.games} games played`}
+                <StatistikKarte
+                  titel="Aktivster Spieler"
+                  wert={statistiken.aktivsterSpieler.name.split('#')[0]}
+                  beschreibung={`${statistiken.aktivsterSpieler.spiele} Spiele gespielt`}
                   icon={<IconSword size={24} color="var(--mantine-color-green-6)" />}
                 />
-                <StatCard
-                  title="Highest Winrate"
-                  value={`${stats.highestWinrate.winrate.toFixed(1)}%`}
-                  description={`${stats.highestWinrate.name.split('#')[0]} (${stats.highestWinrate.games} games)`}
+                <StatistikKarte
+                  titel="Höchste Siegrate"
+                  wert={`${statistiken.höchsteSiegRate.siegRate.toFixed(1)}%`}
+                  beschreibung={`${statistiken.höchsteSiegRate.name.split('#')[0]} (${statistiken.höchsteSiegRate.spiele} Spiele)`}
                   icon={<IconTrophy size={24} color="var(--mantine-color-yellow-6)" />}
                 />
               </SimpleGrid>
 
               {/* Achievement Cards */}
-              <Title order={2} size="h3" mb="md" c="dimmed">Achievements</Title>
+              <Title order={2} size="h3" mb="md" c="dimmed">Errungenschaften</Title>
               <SimpleGrid cols={{ base: 1, sm: 2, md: 3 }} spacing="lg" mb="xl">
-                <AchievementCard
-                  title="Best KDA"
-                  value={stats.bestKDA.kda.toFixed(2)}
-                  playerName={stats.bestKDA.name}
+                <ErrungenschaftKarte
+                  titel="Beste KDA"
+                  wert={statistiken.besteKDA.kda.toFixed(2)}
+                  spielerName={statistiken.besteKDA.name}
                   icon={<IconSword size={24} color="var(--mantine-color-teal-6)" />}
                 />
-                <AchievementCard
-                  title="Longest Win Streak"
-                  value={stats.longestWinStreak.streak}
-                  playerName={stats.longestWinStreak.name}
+                <ErrungenschaftKarte
+                  titel="Längste Siegesserie"
+                  wert={statistiken.längsteSiegesserie.serie}
+                  spielerName={statistiken.längsteSiegesserie.name}
                   icon={<IconTrophy size={24} color="var(--mantine-color-green-6)" />}
                 />
-                <AchievementCard
-                  title="Most Pings"
-                  value={stats.mostPings.pings.toLocaleString()}
-                  playerName={stats.mostPings.name}
+                <ErrungenschaftKarte
+                  titel="Meiste Pings"
+                  wert={statistiken.meistePings.pings.toLocaleString()}
+                  spielerName={statistiken.meistePings.name}
                   icon={<IconHandStop size={24} color="var(--mantine-color-blue-6)" />}
                 />
               </SimpleGrid>
 
               {/* Player Stats */}
-              <Title order={2} size="h3" mb="md" c="dimmed">Player Statistics</Title>
+              <Title order={2} size="h3" mb="md" c="dimmed">Spieler Statistiken</Title>
               <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 4 }} spacing="lg" mb="xl">
-                {stats.playerStats.map((player) => (
-                  <PlayerStatCard key={player.playerName} player={player} />
+                {statistiken.spielerStatistiken.map((spieler) => (
+                  <SpielerStatistikKarte key={spieler.spielerName} spieler={spieler} />
                 ))}
               </SimpleGrid>
 
               {/* Champion Stats */}
-              <Title order={2} size="h3" mb="md" c="dimmed">Most Played Champions</Title>
+              <Title order={2} size="h3" mb="md" c="dimmed">Meist gespielte Champions</Title>
               <SimpleGrid cols={{ base: 1, sm: 2, md: 3, lg: 5 }} spacing="lg">
-                {stats.championStats.map((champion) => (
-                  <ChampionStatCard key={champion.name} champion={champion} />
+                {statistiken.championStatistiken.map((champion) => (
+                  <ChampionStatistikKarte key={champion.name} champion={champion} />
                 ))}
               </SimpleGrid>
             </>

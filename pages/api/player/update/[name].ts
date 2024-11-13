@@ -174,16 +174,52 @@ export default async function handler(
       lastUpdated: new Date().toISOString()
     };
 
-    // Update players.json with clean data
+    // Modify the file operations section
     const filePath = path.join(process.cwd(), 'data', 'players.json');
-    let data;
-    try {
-      const fileData = await fs.readFile(filePath, 'utf8');
-      data = JSON.parse(fileData);
-    } catch {
-      data = { players: {} };
+
+    // Initialize with valid default structure
+    const defaultData = { players: {} };
+
+    // Read existing data or create new
+    async function readOrCreatePlayersFile() {
+      try {
+        // Check if file exists
+        try {
+          await fs.access(filePath);
+        } catch {
+          // File doesn't exist, create it with default structure
+          await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
+          return defaultData;
+        }
+
+        // File exists, try to read it
+        const fileContent = await fs.readFile(filePath, 'utf8');
+        if (!fileContent.trim()) {
+          // File is empty, initialize with default structure
+          await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
+          return defaultData;
+        }
+
+        // Parse existing content
+        const parsed = JSON.parse(fileContent);
+        if (!parsed || typeof parsed !== 'object') {
+          throw new Error('Invalid JSON structure');
+        }
+
+        // Ensure players property exists
+        return {
+          players: { ...((parsed as any).players || {}) }
+        };
+      } catch (error) {
+        console.error('Error reading players file:', error);
+        // Return default structure on any error
+        await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
+        return defaultData;
+      }
     }
-    
+
+    // Replace the existing file reading code with this:
+    const data = await readOrCreatePlayersFile();
     data.players[playerInfo.gameName] = cleanPlayerData;
 
     // Modify the file writing section
@@ -191,9 +227,21 @@ export default async function handler(
       const jsonString = JSON.stringify(data, null, 2);
       // Validate the JSON string before writing
       JSON.parse(jsonString); // This will throw if the JSON is invalid
-      await fs.writeFile(filePath, jsonString);
+      
+      // Write to temporary file first
+      const tempPath = `${filePath}.temp`;
+      await fs.writeFile(tempPath, jsonString);
+      
+      // Verify the temporary file is valid
+      const verificationContent = await fs.readFile(tempPath, 'utf8');
+      JSON.parse(verificationContent); // Verify JSON is valid
+      
+      // If verification passes, rename temp file to actual file
+      await fs.rename(tempPath, filePath);
     } catch (error) {
       console.error('Error preparing or writing JSON:', error);
+      // Restore default structure if something goes wrong
+      await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
       throw new Error('Failed to save valid JSON data');
     }
 

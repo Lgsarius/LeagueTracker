@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "heroku-postbuild": "npm run build"
+    "heroku-postbuild": "npm run build",
+    "prebuild": "node -r ts-node/register scripts/init-data.ts"
   },
   "engines": {
     "node": ">=18.0.0"

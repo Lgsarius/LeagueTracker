@@ -17,8 +17,10 @@ const nextConfig = {
   webpack: (config) => {
     config.module.rules.push({
       test: /\.json$/,
-      type: 'javascript/auto',
-      use: []
+      type: 'json',
+      parser: {
+        parse: JSON.parse
+      }
     })
     return config
   }

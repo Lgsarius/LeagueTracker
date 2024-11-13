@@ -58,7 +58,7 @@ const GAMES_24H_THRESHOLD = 5;
 const MATCH_PREVIEW_COUNT = 10;
 
 // Update the constants
-const ANALYSIS_MATCH_COUNT = 5; // New constant for analysis
+const ANALYSIS_MATCH_COUNT = 6; // New constant for analysis
 
 // Add time constants
 const MOOD_RESET_HOURS = 12; // Reset mood after 12 hours of inactivity

@@ -206,28 +206,43 @@ async function fetchRankedData(summonerId: string) {
 }
 
 async function fetchMatchDetails(puuid: string) {
-  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=3`;
+  console.log('Starting fetchMatchDetails with PUUID:', puuid);
+  
+  // Use fetchWithRetry without custom headers - let it use the default RIOT_API_KEY
+  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=6`;
+  console.log('Fetching matches from:', matchesUrl);
+  
   const matchesResponse = await fetchWithRetry(matchesUrl);
-  if (!matchesResponse.ok) return [];
+  
+  console.log('Matches response status:', matchesResponse.status);
+  if (!matchesResponse.ok) {
+    const errorText = await matchesResponse.text();
+    console.error('Failed to fetch match IDs:', errorText);
+    return [];
+  }
   
   const matchIds = await matchesResponse.json();
-  console.log('Match IDs:', matchIds);
+  console.log('Match IDs retrieved:', matchIds);
   
   return Promise.all(
     matchIds.map(async (matchId: string) => {
       try {
         const matchUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/${matchId}`;
-        console.log('Fetching match:', matchUrl);
+        console.log('Fetching match details:', matchId);
         
+        // Use fetchWithRetry without custom headers here as well
         const response = await fetchWithRetry(matchUrl);
-        if (!response.ok) return null;
         
-        const matchData = await response.json();
-        console.log('Complete participant data:', JSON.stringify(matchData.info.participants[0], null, 2));
+        console.log(`Match ${matchId} response status:`, response.status);
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error(`Failed to fetch match ${matchId}:`, errorText);
+          return null;
+        }
         
-        return matchData;
+        return response.json();
       } catch (error) {
-        console.warn(`Failed to fetch match ${matchId}:`, error);
+        console.error(`Error fetching match ${matchId}:`, error);
         return null;
       }
     })

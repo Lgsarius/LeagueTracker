@@ -301,7 +301,7 @@ export default function HomePage() {
                         variant="gradient"
                        
                       >
-                        LostGames LoL Tracker
+                        LostGames League Tracker
                       </Title>
                       <Group align="center" gap="xl" mt="md">
                         <Text c="dimmed" size="lg">
@@ -312,7 +312,7 @@ export default function HomePage() {
                           variant="gradient" 
                           gradient={{ from: 'blue', to: 'cyan' }}
                         >
-                          {players.length} Accounts
+                          16 Accounts
                         </Badge>
                       </Group>
                     </Box>

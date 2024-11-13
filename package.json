@@ -8,10 +8,10 @@
     "start": "next start",
     "lint": "next lint",
     "heroku-postbuild": "npm run build",
-    "prebuild": "node -r ts-node/register scripts/init-data.ts"
+    "prebuild": "node scripts/init-data.js"
   },
   "engines": {
-    "node": ">=18.0.0"
+    "node": "18.x"
   },
   "dependencies": {
     "@emotion/react": "^11.13.3",

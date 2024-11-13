@@ -765,20 +765,32 @@ const TrendIndicator = ({ matches, puuid }: { matches: any[], puuid: string }) =
 const TiltMeter = ({ matches, puuid }: { matches: any[], puuid: string }) => {
   const tiltLevel = useMemo(() => {
     let tiltScore = 0;
+    const now = Date.now();
+    
     matches?.slice(0, ANALYSIS_MATCH_COUNT).forEach((match, index) => {
       const participant = match.info.participants.find((p: { puuid: string }) => p.puuid === puuid);
       if (!participant) return;
 
-      // Factors that increase tilt
-      if (!participant.win) tiltScore += 2;
-      if (participant.deaths > 8) tiltScore += 1;
-      if (participant.deaths > participant.kills * 2) tiltScore += 1;
+      // Calculate time decay factor (12 hours = 50% reduction)
+      const hoursElapsed = (now - match.info.gameCreation) / (1000 * 60 * 60);
+      const decayFactor = Math.max(0, 1 - (hoursElapsed / 12));
+
+      // Factors that increase tilt, now with decay
+      if (!participant.win) tiltScore += 2 * decayFactor;
+      if (participant.deaths > 8) tiltScore += 1 * decayFactor;
+      if (participant.deaths > participant.kills * 2) tiltScore += 1 * decayFactor;
     });
 
+    // Round the final tilt score
+    const finalTiltScore = Math.round(tiltScore);
+
     return {
-      level: tiltScore,
-      icon: tiltScore < 3 ? '😊' : tiltScore < 6 ? '😐' : tiltScore < 9 ? '😤' : '🤬',
-      label: tiltScore < 3 ? 'Entspannt' : tiltScore < 6 ? 'Normal' : tiltScore < 9 ? 'Leicht getiltet' : 'Hochgetiltet'
+      level: finalTiltScore,
+      icon: finalTiltScore < 3 ? '😊' : finalTiltScore < 6 ? '😐' : finalTiltScore < 9 ? '😤' : '🤬',
+      label: finalTiltScore < 3 ? 'Entspannt' : 
+             finalTiltScore < 6 ? 'Normal' : 
+             finalTiltScore < 9 ? 'Leicht getiltet' : 
+             'Hochgetiltet'
     };
   }, [matches, puuid]);
 

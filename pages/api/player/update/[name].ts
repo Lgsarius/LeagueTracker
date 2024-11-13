@@ -97,25 +97,54 @@ export default async function handler(
       }
     }));
     
-    // Merge matches, avoiding duplicates by gameCreation time
-    const mergedMatches = [...newMatches];
+    // Add type safety for match data
+    interface Match {
+      info: {
+        gameCreation: number;
+        gameDuration: number;
+        gameMode: string;
+        queueId: number | null;
+        participants: Array<{
+          puuid: string;
+          championId: number;
+          championName: string;
+          kills: number;
+          deaths: number;
+          assists: number;
+          win: boolean;
+          pings: Record<string, number>;
+        }>;
+      };
+    }
+
+    // Modify the mergedMatches handling to ensure valid data
+    const mergedMatches = newMatches.filter((match): match is Match => {
+      return Boolean(
+        match?.info?.gameCreation &&
+        match?.info?.gameDuration &&
+        match?.info?.gameMode &&
+        Array.isArray(match?.info?.participants)
+      );
+    });
+
     existingMatches.forEach((existingMatch: MatchInfo) => {
       if (!mergedMatches.some(newMatch => 
         newMatch.info.gameCreation === existingMatch.info.gameCreation
       )) {
-        // Keep existing match if it's not a duplicate
-        if (existingMatch?.info?.gameCreation && 
-            existingMatch?.info?.gameDuration && 
-            existingMatch?.info?.gameMode && 
-            existingMatch?.info?.participants) {
-          // Convert existingMatch to match the expected type
-          const updatedMatch: MatchInfo = {
+        // Validate existing match structure before adding
+        if (
+          existingMatch?.info?.gameCreation &&
+          existingMatch?.info?.gameDuration &&
+          existingMatch?.info?.gameMode &&
+          Array.isArray(existingMatch?.info?.participants)
+        ) {
+          mergedMatches.push({
             info: {
               ...existingMatch.info,
-              queueId: existingMatch.info.queueId ? existingMatch.info.queueId : null,
-            },
-          };
-          mergedMatches.push(updatedMatch);
+              queueId: existingMatch.info.queueId ?? null,
+              participants: existingMatch.info.participants || []
+            }
+          });
         }
       }
     });
@@ -157,7 +186,16 @@ export default async function handler(
     
     data.players[playerInfo.gameName] = cleanPlayerData;
 
-    await fs.writeFile(filePath, JSON.stringify(data, null, 2));
+    // Modify the file writing section
+    try {
+      const jsonString = JSON.stringify(data, null, 2);
+      // Validate the JSON string before writing
+      JSON.parse(jsonString); // This will throw if the JSON is invalid
+      await fs.writeFile(filePath, jsonString);
+    } catch (error) {
+      console.error('Error preparing or writing JSON:', error);
+      throw new Error('Failed to save valid JSON data');
+    }
 
     // Return the cleaned data
     return res.status(200).json({

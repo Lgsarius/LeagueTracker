@@ -209,7 +209,7 @@ async function fetchMatchDetails(puuid: string) {
   console.log('Starting fetchMatchDetails with PUUID:', puuid);
   
   // Use fetchWithRetry without custom headers - let it use the default RIOT_API_KEY
-  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=6`;
+  const matchesUrl = `https://europe.api.riotgames.com/lol/match/v5/matches/by-puuid/${puuid}/ids?start=0&count=5`;
   console.log('Fetching matches from:', matchesUrl);
   
   const matchesResponse = await fetchWithRetry(matchesUrl);

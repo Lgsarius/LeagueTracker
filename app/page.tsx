@@ -12,6 +12,26 @@ import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DigitalClock } from '@/components/DigitalClock';
 
+// First, define the player interface
+interface Player {
+  puuid: string;
+  id: string;
+  accountId: string;
+  name: string;
+  profileIconId: number;
+  revisionDate: number;
+  summonerLevel: number;
+  gameName: string;
+  tagLine: string;
+  matches?: any[]; // Add proper match type if needed
+}
+
+interface PlayersData {
+  players: {
+    [key: string]: Player;
+  };
+}
+
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [isLoading, setIsLoading] = useState(true);

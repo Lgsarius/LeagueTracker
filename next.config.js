@@ -14,6 +14,14 @@ const nextConfig = {
       }
     ],
   },
+  webpack: (config) => {
+    config.module.rules.push({
+      test: /\.json$/,
+      type: 'javascript/auto',
+      use: []
+    })
+    return config
+  }
 }
 
 module.exports = nextConfig 

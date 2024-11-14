@@ -33,6 +33,24 @@ interface PlayerResponse {
   recentMatches: (any | null)[];
 }
 
+interface CachedPlayer {
+  id: string;
+  accountId: string;
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  profileIconId: number;
+  summonerLevel: number;
+}
+
+interface PlayersData {
+  players: {
+    [key: string]: CachedPlayer;
+  };
+}
+
+const typedPlayersData = playersData as PlayersData;
+
 const RIOT_API_KEY = process.env.RIOT_API_KEY;
 
 if (!RIOT_API_KEY) {
@@ -93,7 +111,7 @@ export default async function handler(
 
   try {
     // Check if player exists in players.json
-    const cachedPlayer = playersData.players[name as keyof typeof playersData.players];
+    const cachedPlayer = typedPlayersData.players[name as keyof typeof typedPlayersData.players];
     if (!cachedPlayer) {
       return res.status(404).json({
         message: 'Player not found in database',

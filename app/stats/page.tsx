@@ -90,6 +90,40 @@ const getChampionIconUrl = (championName: string) => {
   return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/champion-icons/${championName.toLowerCase()}.png`;
 };
 
+// Add these interfaces near the top of the file, after the existing interfaces
+interface Match {
+  info: {
+    gameDuration: number;
+    gameMode: string;
+    participants: {
+      puuid: string;
+      championName: string;
+      win: boolean;
+      kills: number;
+      deaths: number;
+      assists: number;
+      pings?: { [key: string]: number };
+    }[];
+  };
+}
+
+interface Player {
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  profileIconId: number;
+  recentMatches?: Match[];
+}
+
+interface PlayersData {
+  players: {
+    [key: string]: Player;
+  };
+}
+
+// Then update the import with type assertion
+const typedPlayersData = playersData as PlayersData;
+
 export default function StatistikSeite() {
   const router = useRouter();
   const [statistiken, setStatistiken] = useState<GlobaleStatistiken | null>(null);
@@ -105,7 +139,7 @@ export default function StatistikSeite() {
     const championData: { [key: string]: { name: string; games: number; wins: number; kills: number; deaths: number; assists: number; } } = {};
     // Process each player's data
     //ignore the _ key
-    Object.entries(playersData.players).forEach(([_, playerData]) => {
+    Object.entries(typedPlayersData.players).forEach(([_, playerData]) => {
       if (!playerData.recentMatches) return;
 
       const matches = playerData.recentMatches;
@@ -317,7 +351,7 @@ export default function StatistikSeite() {
       <Group align="center" mb="md">
         <Image
           src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${
-            playersData.players[spieler.spielerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
+            typedPlayersData.players[spieler.spielerName.split('#')[0] as keyof typeof typedPlayersData.players]?.profileIconId || '1'
           }.png`}
           alt={spieler.spielerName}
           width={48}
@@ -463,7 +497,7 @@ export default function StatistikSeite() {
       <Group align="center" mb={8}>
         <Image
           src={`https://ddragon.leagueoflegends.com/cdn/${DDRAGON_VERSION}/img/profileicon/${
-            playersData.players[spielerName.split('#')[0] as keyof typeof playersData.players]?.profileIconId || '1'
+            typedPlayersData.players[spielerName.split('#')[0] as keyof typeof typedPlayersData.players]?.profileIconId || '1'
           }.png`}
           alt={spielerName}
           width={32}

@@ -4,6 +4,21 @@ import { IconSword, IconSkull, IconHandStop, IconX, IconQuestionMark } from '@ta
 import playersData from '@/data/players.json';
 import { useMediaQuery } from '@mantine/hooks';
 
+interface Player {
+  puuid: string;
+  gameName: string;
+  tagLine: string;
+  profileIconId: number;
+}
+
+interface PlayersData {
+  players: {
+    [key: string]: Player;
+  };
+}
+
+const typedPlayersData = playersData as PlayersData;
+
 interface ScoreboardModalProps {
   opened: boolean;
   onClose: () => void;
@@ -32,7 +47,7 @@ interface ScoreboardModalProps {
 }
 
 const getPlayerNameByPuuid = (puuid: string) => {
-  const player = Object.values(playersData.players).find(p => p.puuid === puuid);
+  const player = Object.values(typedPlayersData.players).find(p => p.puuid === puuid);
   if (player) {
     return `${player.gameName}#${player.tagLine}`;
   }

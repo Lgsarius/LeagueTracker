@@ -4,7 +4,7 @@ import { Container, AppShell, Title, Text, Box, Group, Paper, Button, Badge, Sta
 import { PlayerList } from '@/components/PlayerList';
 import { useState, useEffect } from 'react';
 import { PlayerData } from '@/types/player';
-import playerData from '@/data/players.json';
+import playerData from '@/data/players.json' assert { type: 'json' };
 import summonerTags from '@/data/summoner-tags.json';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -32,6 +32,9 @@ interface PlayersData {
   };
 }
 
+// Add type assertion when importing
+const typedPlayerData = playerData as unknown as PlayersData;
+
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -44,25 +47,23 @@ export default function HomePage() {
     const initializeData = async () => {
       try {
         // Load immediately from local data
-        if (playerData && playerData.players) {
-          const initialPlayers = Object.entries(playerData.players).map(([_, player]) => ({
-            puuid: player.puuid,
-            summoner: {
-              id: player.id,
-              accountId: player.accountId,
+        if (typedPlayerData && typedPlayerData.players) {
+          const initialPlayers = Object.entries(typedPlayerData.players as Record<string, Player>)
+            .map(([_, player]) => ({
               puuid: player.puuid,
-              name: `${player.gameName}#${player.tagLine}`,
-              profileIconId: player.profileIconId,
-              summonerLevel: player.summonerLevel,
-            },
-            rankedInfo: player.rankedInfo || [],
-            recentMatches: player.recentMatches || [],
-          })).map(player => ({
-            ...player,
-            kills: 0,
-            deaths: 0,
-            assists: 0,
-          }));
+              summoner: {
+                id: player.id,
+                accountId: player.accountId,
+                puuid: player.puuid,
+                name: `${player.gameName}#${player.tagLine}`,
+                profileIconId: player.profileIconId,
+                summonerLevel: player.summonerLevel,
+              },
+              rankedInfo: [],
+              kills: 0,
+              deaths: 0,
+              assists: 0,
+            }));
           
           setPlayers(initialPlayers);
           setIsInitialized(true);
@@ -72,10 +73,9 @@ export default function HomePage() {
         setError('Failed to load initial player data');
       } finally {
         setIsLoading(false);
-        // Add a minimum display time for the loading screen
         setTimeout(() => {
           setShowLoadingScreen(false);
-        }, 1500); // Show loading screen for at least 1.5 seconds
+        }, 1500);
       }
     };
 

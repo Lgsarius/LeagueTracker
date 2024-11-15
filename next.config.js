@@ -23,7 +23,20 @@ const nextConfig = {
       }
     })
     return config
-  }
+  },
+  async headers() {
+    return [
+      {
+        source: '/data/players/:file*',
+        headers: [
+          {
+            key: 'Cache-Control',
+            value: 'public, max-age=300', // Cache for 5 minutes
+          },
+        ],
+      },
+    ];
+  },
 }
 
 module.exports = nextConfig 

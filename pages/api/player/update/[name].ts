@@ -26,133 +26,29 @@ export default async function handler(
       });
     }
 
-    // Fetch all required data first
+    // Create directories if they don't exist
+    const publicDir = path.join(process.cwd(), 'public');
+    const dataDir = path.join(publicDir, 'data');
+    const playersDir = path.join(dataDir, 'players');
+
+    await fs.mkdir(publicDir, { recursive: true });
+    await fs.mkdir(dataDir, { recursive: true });
+    await fs.mkdir(playersDir, { recursive: true });
+
+    // Log the directory creation
+    console.log('📁 Created directories:', {
+      publicDir,
+      dataDir,
+      playersDir
+    });
+
+    // Fetch data from Riot API
     const accountData = await fetchAccountData(playerInfo);
     const summonerData = await fetchSummonerData(accountData.puuid);
     const rankedData = await fetchRankedData(summonerData.id);
     const matchDetails = await fetchMatchDetails(accountData.puuid);
-    // Read existing data file
-    const dataPath = path.join(process.cwd(), 'data', 'players.json');
-    interface PlayerData {
-      players: {
-        [key: string]: {
-          recentMatches?: any[];
-          // ... other player properties can be defined here if needed
-        };
-      };
-    }
 
-    let playerData: PlayerData = { players: {} };
-    try {
-      const fileContent = await fs.readFile(dataPath, 'utf-8');
-      playerData = JSON.parse(fileContent);
-    } catch (error) {
-      // File doesn't exist or is invalid, use empty data object
-    }
-
-    // Prepare clean player data
-    const existingPlayer = playerData.players[playerInfo.gameName];
-    const existingMatches = existingPlayer?.recentMatches || [];
-    
-    // Add this interface before the merge logic
-    interface MatchInfo {
-      info: {
-        gameCreation: number;
-        gameDuration: number;
-        gameMode: string;
-        participants: any[];
-        queueId: number | null;
-      }
-    }
-
-    // Convert new matches to the clean format
-    const newMatches = matchDetails.filter(Boolean).map(match => ({
-      info: {
-        gameCreation: match.info.gameCreation,
-        gameDuration: match.info.gameDuration,
-        gameMode: match.info.gameMode,
-        queueId: match.info.queueId,
-        participants: match.info.participants.map((p: any) => ({
-          puuid: p.puuid,
-          championId: p.championId,
-          championName: p.championName,
-          kills: p.kills,
-          deaths: p.deaths,
-          assists: p.assists,
-          win: p.win,
-          pings: {
-            missing: p.enemyMissingPings || 0,
-            danger: p.dangerPings || 0,
-            command: p.commandPings || 0,
-            vision: p.enemyVisionPings || 0,
-            getBack: p.getBackPings || 0,
-            hold: p.holdPings || 0,
-            needVision: p.needVisionPings || 0,
-            onMyWay: p.onMyWayPings || 0,
-            push: p.pushPings || 0,
-            retreat: p.retreatPings || 0,
-            visionCleared: p.visionClearedPings || 0,
-          }
-        }))
-      }
-    }));
-    
-    // Add type safety for match data
-    interface Match {
-      info: {
-        gameCreation: number;
-        gameDuration: number;
-        gameMode: string;
-        queueId: number | null;
-        participants: Array<{
-          puuid: string;
-          championId: number;
-          championName: string;
-          kills: number;
-          deaths: number;
-          assists: number;
-          win: boolean;
-          pings: Record<string, number>;
-        }>;
-      };
-    }
-
-    // Modify the mergedMatches handling to ensure valid data
-    const mergedMatches = newMatches.filter((match): match is Match => {
-      return Boolean(
-        match?.info?.gameCreation &&
-        match?.info?.gameDuration &&
-        match?.info?.gameMode &&
-        Array.isArray(match?.info?.participants)
-      );
-    });
-
-    existingMatches.forEach((existingMatch: MatchInfo) => {
-      if (!mergedMatches.some(newMatch => 
-        newMatch.info.gameCreation === existingMatch.info.gameCreation
-      )) {
-        // Validate existing match structure before adding
-        if (
-          existingMatch?.info?.gameCreation &&
-          existingMatch?.info?.gameDuration &&
-          existingMatch?.info?.gameMode &&
-          Array.isArray(existingMatch?.info?.participants)
-        ) {
-          mergedMatches.push({
-            info: {
-              ...existingMatch.info,
-              queueId: existingMatch.info.queueId ?? null,
-              participants: existingMatch.info.participants || []
-            }
-          });
-        }
-      }
-    });
-    // Sort and limit to 20 most recent matches
-    const sortedMatches = mergedMatches
-      .sort((a, b) => b.info.gameCreation - a.info.gameCreation)
-      .slice(0, 20);
-    
+    // Prepare player data
     const cleanPlayerData = {
       gameName: playerInfo.gameName,
       tagLine: playerInfo.tagLine,
@@ -170,80 +66,17 @@ export default async function handler(
         wins: queue.wins,
         losses: queue.losses,
       })),
-      recentMatches: sortedMatches,
+      recentMatches: matchDetails,
       lastUpdated: new Date().toISOString()
     };
 
-    // Modify the file operations section
-    const filePath = path.join(process.cwd(), 'data', 'players.json');
-
-    // Initialize with valid default structure
-    const defaultData = { players: {} };
-
-    // Read existing data or create new
-    async function readOrCreatePlayersFile() {
-      try {
-        // Check if file exists
-        try {
-          await fs.access(filePath);
-        } catch {
-          // File doesn't exist, create it with default structure
-          await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
-          return defaultData;
-        }
-
-        // File exists, try to read it
-        const fileContent = await fs.readFile(filePath, 'utf8');
-        if (!fileContent.trim()) {
-          // File is empty, initialize with default structure
-          await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
-          return defaultData;
-        }
-
-        // Parse existing content
-        const parsed = JSON.parse(fileContent);
-        if (!parsed || typeof parsed !== 'object') {
-          throw new Error('Invalid JSON structure');
-        }
-
-        // Ensure players property exists
-        return {
-          players: { ...((parsed as any).players || {}) }
-        };
-      } catch (error) {
-        console.error('Error reading players file:', error);
-        // Return default structure on any error
-        await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
-        return defaultData;
-      }
-    }
-
-    // Replace the existing file reading code with this:
-    const data = await readOrCreatePlayersFile();
-    data.players[playerInfo.gameName] = cleanPlayerData;
-
-    // Modify the file writing section
-    try {
-      const jsonString = JSON.stringify(data, null, 2);
-      // Validate the JSON string before writing
-      JSON.parse(jsonString); // This will throw if the JSON is invalid
-      
-      // Write to temporary file first
-      const tempPath = `${filePath}.temp`;
-      await fs.writeFile(tempPath, jsonString);
-      
-      // Verify the temporary file is valid
-      const verificationContent = await fs.readFile(tempPath, 'utf8');
-      JSON.parse(verificationContent); // Verify JSON is valid
-      
-      // If verification passes, rename temp file to actual file
-      await fs.rename(tempPath, filePath);
-    } catch (error) {
-      console.error('Error preparing or writing JSON:', error);
-      // Restore default structure if something goes wrong
-      await fs.writeFile(filePath, JSON.stringify(defaultData, null, 2));
-      throw new Error('Failed to save valid JSON data');
-    }
+    // Save to individual JSON file
+    const playerFilePath = path.join(playersDir, `${playerInfo.gameName}.json`);
+    await fs.writeFile(
+      playerFilePath, 
+      JSON.stringify(cleanPlayerData, null, 2)
+    );
+    console.log(`💾 Saved player data to:`, playerFilePath);
 
     // Return the cleaned data
     return res.status(200).json({

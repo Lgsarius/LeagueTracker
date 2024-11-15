@@ -19,21 +19,21 @@ export interface RankedInfo {
 
 export interface PlayerData {
   puuid: string;
-  summoner: Summoner;
-  rankedInfo: RankedInfo[];
-  kills: number;
-  deaths: number;
-  assists: number;
-  recentMatches?: {
-    info: {
-      gameCreation: number;
-      participants: {
-        puuid: string;
-        win: boolean;
-        kills: number;
-        deaths: number;
-        assists: number;
-      }[];
-    };
-  }[];
+  summoner: {
+    id: string;
+    accountId: string;
+    puuid: string;
+    name: string;
+    profileIconId: number;
+    summonerLevel: number;
+  };
+  rankedInfo: Array<{
+    queueType: string;
+    tier: string;
+    rank: string;
+    leaguePoints: number;
+    wins: number;
+    losses: number;
+  }>;
+  recentMatches?: any[];
 } 

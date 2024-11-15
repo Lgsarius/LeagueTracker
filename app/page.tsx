@@ -4,7 +4,6 @@ import { Container, AppShell, Title, Text, Box, Group, Paper, Button, Badge, Sta
 import { PlayerList } from '@/components/PlayerList';
 import { useState, useEffect } from 'react';
 import { PlayerData } from '@/types/player';
-import playerData from '@/data/players.json' assert { type: 'json' };
 import summonerTags from '@/data/summoner-tags.json';
 import Link from 'next/link';
 import Image from 'next/image';
@@ -31,122 +30,162 @@ interface PlayersData {
     [key: string]: Player;
   };
 }
-
-// Add type assertion when importing
-const typedPlayerData = playerData as unknown as PlayersData;
-
 export default function HomePage() {
   const [players, setPlayers] = useState<PlayerData[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [isInitialized, setIsInitialized] = useState(false);
   const [showLoadingScreen, setShowLoadingScreen] = useState(true);
 
-  // Modify the initial load effect
+  // Add a new useEffect to initialize players if files don't exist
   useEffect(() => {
-    const initializeData = async () => {
+    const initializeMissingPlayers = async () => {
+      setIsLoading(true);
       try {
-        // Load immediately from local data
-        if (typedPlayerData && typedPlayerData.players) {
-          const initialPlayers = Object.entries(typedPlayerData.players as Record<string, Player>)
-            .map(([_, player]) => ({
-              puuid: player.puuid,
-              summoner: {
-                id: player.id,
-                accountId: player.accountId,
-                puuid: player.puuid,
-                name: `${player.gameName}#${player.tagLine}`,
-                profileIconId: player.profileIconId,
-                summonerLevel: player.summonerLevel,
-              },
-              rankedInfo: [],
-              kills: 0,
-              deaths: 0,
-              assists: 0,
-            }));
-          
-          setPlayers(initialPlayers);
-          setIsInitialized(true);
-        }
+        const playerNames = Object.keys(summonerTags);
+        
+        // Try to initialize each missing player
+        await Promise.allSettled(
+          playerNames.map(async (name) => {
+            try {
+              // First check if file exists
+              const response = await fetch(`/data/players/${name}.json`);
+              if (response.ok) {
+                console.log(`✅ Player ${name} already initialized`);
+                return;
+              }
+
+              console.log(`🔄 Initializing ${name}...`);
+              const tagLine = (summonerTags as Record<string, string>)[name]?.split('#')[1];
+              
+              if (!tagLine) {
+                throw new Error(`No tag found for ${name}`);
+              }
+
+              const playerInfo = {
+                gameName: name,
+                tagLine: tagLine,
+              };
+
+              // Initialize player through API
+              const initResponse = await fetch(`/api/player/update/${encodeURIComponent(name)}`, {
+                method: 'POST',
+                headers: {
+                  'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(playerInfo),
+              });
+
+              if (!initResponse.ok) {
+                throw new Error(`Failed to initialize ${name}`);
+              }
+
+              console.log(`✅ Successfully initialized ${name}`);
+            } catch (error) {
+              console.error(`❌ Error initializing ${name}:`, error);
+            }
+          })
+        );
+
+        // After initialization, load all players
+        await loadPlayerFiles();
       } catch (error) {
-        console.error('Error loading initial data:', error);
-        setError('Failed to load initial player data');
+        console.error('Failed to initialize players:', error);
+        setError('Failed to initialize players');
       } finally {
         setIsLoading(false);
-        setTimeout(() => {
-          setShowLoadingScreen(false);
-        }, 1500);
+        setShowLoadingScreen(false);
       }
     };
 
-    initializeData();
-  }, []);
+    initializeMissingPlayers();
+  }, []); // Run once on mount
 
-  // Separate effect for loading fresh data after initial render
-  useEffect(() => {
-    if (isInitialized) {
-      loadAllPlayers();
-    }
-  }, [isInitialized]);
-
-  const loadAllPlayers = async () => {
-    setIsLoading(true);
-    setError(null);
-
+  // Modify loadPlayerFiles to be callable from other functions
+  const loadPlayerFiles = async () => {
     try {
       const playerNames = Object.keys(summonerTags);
-      console.log('🔄 Starting refresh for all players:', playerNames);
-      
-      const updatedPlayers = await Promise.allSettled(
-        playerNames.map(async (name) => {
-          try {
-            console.log(`📡 Fetching data for ${name}...`);
-            const playerInfo = {
-              gameName: name,
-              tagLine: summonerTags[name as keyof typeof summonerTags].split('#')[1],
-            };
+      const loadedPlayers: PlayerData[] = [];
 
-            const response = await fetch(`/api/player/update/${encodeURIComponent(name)}`, {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
+      for (const name of playerNames) {
+        try {
+          const response = await fetch(`/data/players/${name}.json`);
+          if (response.ok) {
+            const playerData = await response.json();
+            loadedPlayers.push({
+              puuid: playerData.puuid,
+              summoner: {
+                id: playerData.id,
+                accountId: playerData.accountId,
+                puuid: playerData.puuid,
+                name: `${playerData.gameName}#${playerData.tagLine}`,
+                profileIconId: playerData.profileIconId,
+                summonerLevel: playerData.summonerLevel,
               },
-              body: JSON.stringify(playerInfo),
+              rankedInfo: playerData.rankedInfo || [],
+              recentMatches: playerData.recentMatches || [],
             });
-
-            if (!response.ok) {
-              const errorData = await response.json();
-              console.error(`Failed to update ${name}:`, errorData);
-              throw new Error(`Failed to update ${name}: ${response.status}`);
-            }
-
-            const data = await response.json();
-            console.log(`✅ Successfully updated ${name}`);
-            return data;
-          } catch (error) {
-            console.error(`❌ Error updating ${name}:`, error);
-            // Return existing player data if available
-            const existingPlayer = players.find(p => p.summoner.name.split('#')[0] === name);
-            return existingPlayer || null;
           }
-        })
-      );
-
-      const successfulUpdates = updatedPlayers
-      /* eslint-disable @typescript-eslint/no-explicit-any */
-        .filter((result): result is PromiseFulfilledResult<any> => 
-          result.status === 'fulfilled' && result.value !== null
-        )
-        .map(result => result.value);
-
-      if (successfulUpdates.length > 0) {
-        setPlayers(successfulUpdates);
+        } catch (error) {
+          console.warn(`Failed to load data for ${name}`, error);
+        }
       }
+
+      setPlayers(loadedPlayers);
     } catch (error) {
-      console.error('❌ Global update failed:', error);
-      setError('Failed to update player data');
-    } finally {
-      setIsLoading(false);
+      console.error('Error loading player files:', error);
+    }
+  };
+
+  // Refresh individual player
+  const handleReloadPlayer = async (name: string) => {
+    try {
+      const baseName = name.split('#')[0];
+      const tagLine = (summonerTags as Record<string, string>)[baseName]?.split('#')[1];
+      
+      if (!tagLine) {
+        throw new Error(`No tag found for ${baseName}`);
+      }
+
+      const playerInfo = {
+        gameName: baseName,
+        tagLine: tagLine,
+      };
+
+      const response = await fetch(`/api/player/update/${encodeURIComponent(baseName)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(playerInfo),
+      });
+
+      if (!response.ok) throw new Error(`Failed to update ${baseName}`);
+      
+      const playerData = await response.json();
+      
+      // Calculate totals from recent matches
+      const totals = playerData.recentMatches?.reduce((acc: any, match: any) => {
+        const participant = match.info.participants.find(
+          (p: any) => p.puuid === playerData.puuid
+        );
+        if (participant) {
+          acc.kills += participant.kills || 0;
+          acc.deaths += participant.deaths || 0;
+          acc.assists += participant.assists || 0;
+        }
+        return acc;
+      }, { kills: 0, deaths: 0, assists: 0 }) || { kills: 0, deaths: 0, assists: 0 };
+
+      const updatedPlayer = {
+        ...playerData,
+        kills: totals.kills,
+        deaths: totals.deaths,
+        assists: totals.assists
+      };
+
+      setPlayers(prev => prev.map(p => 
+        p.summoner.name.split('#')[0] === baseName ? updatedPlayer : p
+      ));
+    } catch (error) {
+      console.error(`Error updating ${name}:`, error);
     }
   };
 
@@ -154,52 +193,14 @@ export default function HomePage() {
     setPlayers(prev => prev.filter(p => p.summoner.name !== name));
   };
 
-  const handleReloadPlayer = async (name: string) => {
-    try {
-      console.log(`🔄 Starting refresh for ${name}...`);
-      
-      // Get the player's base name (without the tag)
-      const baseName = name.split('#')[0];
-      const playerInfo = {
-        gameName: baseName,
-        tagLine: summonerTags[baseName as keyof typeof summonerTags].split('#')[1],
-      };
-
-      console.log(`📡 Fetching updated data for ${baseName}...`);
-      const response = await fetch(`/api/player/update/${encodeURIComponent(baseName)}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(playerInfo),
-      });
-
-      if (!response.ok) {
-        throw new Error(`Failed to update ${baseName}: ${response.status}`);
-      }
-      
-      const updatedPlayer = await response.json();
-      console.log(`✅ Successfully updated ${baseName}`);
-      
-      setPlayers(prev => prev.map(p => 
-        p.summoner.name.split('#')[0] === baseName ? updatedPlayer : p
-      ));
-    } catch (error) {
-      console.error(`❌ Error updating player ${name}:`, error);
-      setError(`Failed to update ${name}`);
-    }
-  };
-
   const initializeNewPlayers = async () => {
     setIsLoading(true);
     setError(null);
 
     try {
-      // Get all player names from the summoner-tags.json
       const playerNames = Object.keys(summonerTags);
       console.log('🔍 Checking for new players in:', playerNames);
       
-      // Filter for players that aren't already in the current state
       const currentPlayerNames = players.map(p => p.summoner.name.split('#')[0]);
       const newPlayers = playerNames.filter(name => !currentPlayerNames.includes(name));
       
@@ -210,14 +211,19 @@ export default function HomePage() {
 
       console.log('🆕 Found new players:', newPlayers);
       
-      // Initialize each new player
       const updatedPlayers = await Promise.allSettled(
         newPlayers.map(async (name) => {
           try {
             console.log(`📡 Initializing ${name}...`);
+            const tagLine = (summonerTags as Record<string, string>)[name]?.split('#')[1];
+            
+            if (!tagLine) {
+              throw new Error(`No tag found for ${name}`);
+            }
+
             const playerInfo = {
               gameName: name,
-              tagLine: summonerTags[name as keyof typeof summonerTags].split('#')[1],
+              tagLine: tagLine,
             };
 
             const response = await fetch(`/api/player/update/${encodeURIComponent(name)}`, {
@@ -242,9 +248,7 @@ export default function HomePage() {
         })
       );
 
-      // Filter out failed updates
       const successfulInits = updatedPlayers
-      /* eslint-disable @typescript-eslint/no-explicit-any */
         .filter((result): result is PromiseFulfilledResult<any> => 
           result.status === 'fulfilled' && result.value !== null
         )
@@ -255,8 +259,64 @@ export default function HomePage() {
       // Update the players list with both existing and new players
       setPlayers(prev => [...prev, ...successfulInits]);
     } catch (error) {
-      console.error('❌ Global initialization failed:', error);
+      console.error(' Global initialization failed:', error);
       setError('Failed to initialize new players');
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Add the loadAllPlayers function
+  const loadAllPlayers = async () => {
+    setIsLoading(true);
+    try {
+      const playerNames = Object.keys(summonerTags);
+      
+      const updatedPlayers = await Promise.allSettled(
+        playerNames.map(async (name) => {
+          try {
+            const tagLine = (summonerTags as Record<string, string>)[name]?.split('#')[1];
+            
+            if (!tagLine) {
+              throw new Error(`No tag found for ${name}`);
+            }
+
+            const playerInfo = {
+              gameName: name,
+              tagLine: tagLine,
+            };
+
+            const response = await fetch(`/api/player/update/${encodeURIComponent(name)}`, {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(playerInfo),
+            });
+
+            if (!response.ok) {
+              throw new Error(`Failed to update ${name}`);
+            }
+            
+            const data = await response.json();
+            return data;
+          } catch (error) {
+            console.error(`Error updating ${name}:`, error);
+            return null;
+          }
+        })
+      );
+
+      const successfulUpdates = updatedPlayers
+        .filter((result): result is PromiseFulfilledResult<any> => 
+          result.status === 'fulfilled' && result.value !== null
+        )
+        .map(result => result.value);
+
+      setPlayers(successfulUpdates);
+    } catch (error) {
+      console.error('Failed to reload all players:', error);
+      setError('Failed to reload all players');
     } finally {
       setIsLoading(false);
     }

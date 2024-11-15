@@ -9,7 +9,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
-import { DigitalClock } from '@/components/DigitalClock';
+import { IconBrandGithub } from '@tabler/icons-react';
 
 // First, define the player interface
 interface Player {
@@ -336,11 +336,14 @@ export default function HomePage() {
         <AppShell
           bg="dark.8"
           style={{ minHeight: '100vh' }}
+          footer={{ height: 60 }}
         >
+          {/* Main Content Container */}
           <Container 
             size="100%"
             py="xl"
             px={{ base: 'md', sm: 40 }}
+            style={{ minHeight: 'calc(100vh - 60px)' }}
           >
             {/* Hero Section */}
             <Paper
@@ -398,26 +401,7 @@ export default function HomePage() {
                     </Box>
                   </Group>
 
-                  {/* Digital Clock - Hidden on Mobile */}
-                  <Paper
-                    p="xl"
-                    radius="md"
-                    style={{
-                      background: 'rgba(0,0,0,0.2)',
-                      border: '1px solid rgba(255,255,255,0.1)',
-                      backdropFilter: 'blur(8px)',
-                      minWidth: '300px',
-                      transition: 'transform 0.2s, box-shadow 0.2s',
-                      '&:hover': {
-                        transform: 'translateY(-2px)',
-                        boxShadow: '0 8px 24px rgba(0,0,0,0.2)',
-                      },
-                    }}
-                    hiddenFrom="sm"
-                    visibleFrom="sm"
-                  >
-                    <DigitalClock />
-                  </Paper>
+               
                 </Group>
               </Stack>
             </Paper>
@@ -447,6 +431,45 @@ export default function HomePage() {
 
            
           </Container>
+
+          {/* Custom Footer in German */}
+          <Box 
+            component="footer" 
+            h={60} 
+            p="md"
+            style={{
+              borderTop: '1px solid rgba(255,255,255,0.1)',
+              background: 'rgba(26,27,30,0.95)',
+            }}
+          >
+            <Container size="100%">
+              <Group justify="space-between" align="center">
+                <Text size="sm" c="dimmed">
+                  © 2024 LostGames Community Hub. Mit ♥ erstellt für unsere Community
+                </Text>
+                <Group gap="xs" justify="flex-end">
+                  <Button 
+                    variant="subtle" 
+                    size="xs"
+                    component={Link}
+                    href="https://github.com/Lgsarius/LeagueTracker"
+                    target="_blank"
+                    leftSection={<IconBrandGithub size={16} />}
+                  >
+                    GitHub
+                  </Button>
+                  <Button 
+                    variant="subtle" 
+                    size="xs"
+                    component={Link}
+                    href="/about"
+                  >
+                    Über uns
+                  </Button>
+                </Group>
+              </Group>
+            </Container>
+          </Box>
         </AppShell>
       </motion.div>
     </>

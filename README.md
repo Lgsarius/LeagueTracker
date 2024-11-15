@@ -1,36 +1,100 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+<div align="center">
+  <img src="/public/LOGO.png" alt="LostGames Logo" width="200"/>
+  <h1>LostGames League Tracker</h1>
 
-## Getting Started
+  [![Next.js](https://img.shields.io/badge/Next.js-13+-000000?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+  [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+  [![Mantine UI](https://img.shields.io/badge/Mantine_UI-339AF0?style=for-the-badge&logo=mantine&logoColor=white)](https://mantine.dev/)
+  [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-First, run the development server:
+  Ein Community-entwickelter League of Legends Tracker für die LostGames Freundesgruppe
+</div>
 
+## 🎮 Features
+
+- **Live Tracking**: Echtzeitverfolgung von Spielerstatistiken
+- **Match History**: Detaillierte Spielverlaufsanalyse
+- **Automatische Updates**: Integration mit der Riot Games API
+- **Responsive Design**: Optimiert für Desktop und Mobile
+- **Dark Mode**: Augenschonendes Design für lange Gaming-Sessions
+
+## 🚀 Demo
+
+Besuche den Tracker unter: [lostgames-tracker.vercel.app](https://lostgames-tracker.vercel.app)
+
+
+## 🛠️ Tech Stack
+
+- **Frontend**: Next.js 13+ (App Router)
+- **Styling**: Mantine UI + Tailwind CSS
+- **Animation**: Framer Motion
+- **API**: Riot Games API
+- **Deployment**: Vercel
+
+## 📦 Installation
+
+1. Repository klonen
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/yourusername/lostgames-tracker.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Dependencies installieren
+```bash
+npm install
+# oder
+yarn install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Environment Variablen setzen
+```bash
+cp .env.example .env.local
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Development Server starten
+```bash
+npm run dev
+# oder
+yarn dev
+```
 
-## Learn More
+5. Browser öffnen
+```
+http://localhost:3000
+```
 
-To learn more about Next.js, take a look at the following resources:
+## 🔑 Environment Variablen
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```env
+NEXT_PUBLIC_RIOT_API_KEY=dein-riot-api-key
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## 📝 Verwendung
 
-## Deploy on Vercel
+1. Öffne die Webseite
+2. Gib den Summoner-Namen ein
+3. Verfolge Live-Statistiken und Match-Historie
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## 🤝 Beitragen
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Beiträge sind willkommen! Bitte folge diesen Schritten:
+
+1. Fork das Repository
+2. Erstelle einen Feature Branch (`git checkout -b feature/AmazingFeature`)
+3. Committe deine Änderungen (`git commit -m 'Add some AmazingFeature'`)
+4. Push zum Branch (`git push origin feature/AmazingFeature`)
+5. Öffne einen Pull Request
+
+## 📜 Lizenz
+
+Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE](LICENSE) für Details.
+
+## 🙏 Credits
+
+- [Riot Games API](https://developer.riotgames.com/) für die Bereitstellung der Daten
+- [Next.js](https://nextjs.org/) für das awesome Framework
+- [Mantine UI](https://mantine.dev/) für die UI Komponenten
+
+<div align="center">
+  <br />
+  <p>Mit ❤️ entwickelt von der LostGames Community</p>
+</div>

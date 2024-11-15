@@ -12,7 +12,7 @@ import { formatDistanceToNow } from 'date-fns/formatDistanceToNow';
 import { differenceInHours } from 'date-fns';
 import ScoreboardModal from './ScoreboardModal'; // Import the new modal component
 import { useRouter } from 'next/navigation';
-import { EnvironmentStats } from './EnvironmentStats';
+
 
 interface PlayerListProps {
   players: PlayerData[];
@@ -1027,26 +1027,11 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
           >
             Bestenliste
           </Button>
-          <EnvironmentStats />
+
         </Group>
 
         <Group>
-          <Button
-            variant="light"
-            leftSection={<IconRefresh size={20} />}
-            onClick={onInitNewPlayers}
-            loading={isLoading}
-          >
-            Spieler laden
-          </Button>
-          <Button
-            variant="filled"
-            leftSection={<IconRefresh size={20} />}
-            onClick={onReload}
-            loading={isLoading}
-          >
-            Alle aktualisieren
-          </Button>
+   
         </Group>
       </Group>
       <Paper p="md" radius="md" mb="lg" style={CARD_STYLES}>

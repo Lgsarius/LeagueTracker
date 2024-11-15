@@ -10,6 +10,7 @@ import Image from 'next/image';
 import { LoadingScreen } from '@/components/LoadingScreen';
 import { motion, AnimatePresence } from 'framer-motion';
 import { IconBrandGithub } from '@tabler/icons-react';
+import { Header } from '@/components/Header';
 
 // First, define the player interface
 interface Player {
@@ -333,144 +334,42 @@ export default function HomePage() {
         animate={{ opacity: showLoadingScreen ? 0 : 1 }}
         transition={{ duration: 0.5 }}
       >
-        <AppShell
-          bg="dark.8"
-          style={{ minHeight: '100vh' }}
-          footer={{ height: 60 }}
+        <Container 
+          size="100%"
+          py="xl"
+          px={{ base: 'md', sm: 40 }}
+          style={{ minHeight: 'calc(100vh - 60px)' }}
         >
-          {/* Main Content Container */}
-          <Container 
-            size="100%"
-            py="xl"
-            px={{ base: 'md', sm: 40 }}
-            style={{ minHeight: 'calc(100vh - 60px)' }}
-          >
-            {/* Hero Section */}
-            <Paper
-              radius="lg"
-              p={{ base: 'md', sm: 'xl' }}
-              mb={50}
-              style={{
-                background: 'linear-gradient(to right, rgba(26,27,30,0.95), rgba(26,27,30,0.8))',
-                backdropFilter: 'blur(10px)',
-                border: '1px solid rgba(255,255,255,0.1)',
-              }}
-            >
-              {/* Main Content */}
-              <Stack gap="xl">
-                {/* Header Group */}
-                <Group 
-                  justify="space-between" 
-                  align="center" 
-              
-                >
-                  {/* Logo and Title */}
-                  <Group gap="md" wrap="nowrap">
-                    <Image 
-                      src="/LOGO.png"
-                      alt="LostGames Logo"
-                      width={80}
-                      height={80}
-                      style={{
-                        borderRadius: '50%',
-                        objectFit: 'cover',
-                      }}
-                    />
-                    <Box>
-                      <Title 
-                        order={1}
-                      
-                        fw={900}
-                        variant="gradient"
-                       
-                      >
-                        LostGames League Tracker
-                      </Title>
-                      <Group align="center" gap="xl" mt="md">
-                        <Text c="dimmed" size="lg">
-                          Alle LostGames LoL Spieler
-                        </Text>
-                        <Badge 
-                          size="lg" 
-                          variant="gradient" 
-                          gradient={{ from: 'blue', to: 'cyan' }}
-                        >
-                          16 Accounts
-                        </Badge>
-                      </Group>
-                    </Box>
-                  </Group>
+          <Header 
+            onReload={loadAllPlayers}
+            isLoading={isLoading}
+            playerCount={players.length}
+            showActions={true}
+          />
 
-               
-                </Group>
-              </Stack>
+          {/* Status Messages */}
+          {error && (
+            <Paper p="md" radius="md" mb={20} bg="red.9">
+              <Text c="white">{error}</Text>
             </Paper>
+          )}
 
-            {/* Status Messages */}
-            {error && (
-              <Paper p="md" radius="md" mb={20} bg="red.9">
-                <Text c="white">{error}</Text>
-              </Paper>
-            )}
-
-            {/* Players Grid */}
-            {isLoading && !players.length ? (
-              <Paper p="xl" radius="md" ta="center">
-                <Text size="lg">Loading players...</Text>
-              </Paper>
-            ) : (
-              <PlayerList 
-                players={players} 
-                onRemovePlayer={handleRemovePlayer} 
-                onReload={loadAllPlayers}
-                onReloadPlayer={handleReloadPlayer}
-                isLoading={isLoading}
-                onInitNewPlayers={initializeNewPlayers}
-              />
-            )}
-
-           
-          </Container>
-
-          {/* Custom Footer in German */}
-          <Box 
-            component="footer" 
-            h={60} 
-            p="md"
-            style={{
-              borderTop: '1px solid rgba(255,255,255,0.1)',
-              background: 'rgba(26,27,30,0.95)',
-            }}
-          >
-            <Container size="100%">
-              <Group justify="space-between" align="center">
-                <Text size="sm" c="dimmed">
-                  © 2024 LostGames Community Hub. Mit ♥ erstellt für unsere Community
-                </Text>
-                <Group gap="xs" justify="flex-end">
-                  <Button 
-                    variant="subtle" 
-                    size="xs"
-                    component={Link}
-                    href="https://github.com/Lgsarius/LeagueTracker"
-                    target="_blank"
-                    leftSection={<IconBrandGithub size={16} />}
-                  >
-                    GitHub
-                  </Button>
-                  <Button 
-                    variant="subtle" 
-                    size="xs"
-                    component={Link}
-                    href="/about"
-                  >
-                    Über uns
-                  </Button>
-                </Group>
-              </Group>
-            </Container>
-          </Box>
-        </AppShell>
+          {/* Players Grid */}
+          {isLoading && !players.length ? (
+            <Paper p="xl" radius="md" ta="center">
+              <Text size="lg">Loading players...</Text>
+            </Paper>
+          ) : (
+            <PlayerList 
+              players={players} 
+              onRemovePlayer={handleRemovePlayer} 
+              onReload={loadAllPlayers}
+              onReloadPlayer={handleReloadPlayer}
+              isLoading={isLoading}
+              onInitNewPlayers={initializeNewPlayers}
+            />
+          )}
+        </Container>
       </motion.div>
     </>
   );

@@ -14,7 +14,7 @@ const nextConfig = {
       }
     ],
   },
-  webpack: (config) => {
+  webpack: (config, { buildId, dev, isServer, defaultLoaders, webpack }) => {
     config.module.rules.push({
       test: /\.json$/,
       type: 'json',
@@ -22,6 +22,11 @@ const nextConfig = {
         parse: JSON.parse
       }
     })
+    config.cache = {
+      type: 'filesystem',
+      // Increase the version number if you need to invalidate the cache
+      version: '1.0.0'
+    }
     return config
   },
   async headers() {

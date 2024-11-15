@@ -116,7 +116,7 @@ const shouldShowAlert = (player: PlayerData) => {
   
   for (const match of recentMatches) {
     const participant = match.info.participants.find(
-      p => p.puuid === player.summoner.puuid
+      (p: { puuid: string }) => p.puuid === player.summoner.puuid
     );
     if (!participant || participant.win) break;
     consecutiveLosses++;
@@ -131,7 +131,7 @@ const checkBadKDA = (player: PlayerData) => {
   const recentMatches = player.recentMatches.slice(0, ANALYSIS_MATCH_COUNT);
   const averageKDA = recentMatches.reduce((acc, match) => {
     const participant = match.info.participants.find(
-      p => p.puuid === player.summoner.puuid
+      (p: { puuid: string }) => p.puuid === player.summoner.puuid
     );
     if (!participant) return acc;
     const kda = ((participant.kills + participant.assists) / Math.max(1, participant.deaths));
@@ -166,7 +166,7 @@ const getRecentWinrate = (player: PlayerData) => {
 
   const wins = recentMatches.reduce((acc, match) => {
     const participant = match.info.participants.find(
-      p => p.puuid === player.summoner.puuid
+      (p: { puuid: string; win?: boolean }) => p.puuid === player.summoner.puuid
     );
     return acc + (participant?.win ? 1 : 0);
   }, 0);
@@ -555,7 +555,7 @@ const hasWinStreak = (player: PlayerData) => {
   
   const recentMatches = player.recentMatches.slice(0, 3);
   return recentMatches.every(match => {
-    const participant = match.info.participants.find(p => p.puuid === player.summoner.puuid);
+    const participant = match.info.participants.find((p: { puuid: string }) => p.puuid === player.summoner.puuid);
     return participant?.win;
   });
 };
@@ -905,7 +905,7 @@ export function PlayerList({ players, onReload, onInitNewPlayers, onReloadPlayer
       const playerMatches = player.recentMatches.slice(0, 20); // Last 20 matches
       const totalStats = playerMatches.reduce((acc, match) => {
         const participant = match.info.participants.find(
-          p => p.puuid === player.summoner.puuid
+          (p: { puuid: string }) => p.puuid === player.summoner.puuid
         );
         if (!participant) return acc;
         

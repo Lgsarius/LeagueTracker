@@ -1,6 +1,4 @@
 /* eslint-disable */
-
-
 import { Container, Title, Text, Button, Group, Box, Stack } from '@mantine/core';
 import Image from 'next/image';
 import Link from 'next/link';

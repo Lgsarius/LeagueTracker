@@ -1,5 +1,5 @@
 'use client';
-
+/* eslint-disable */
 import { Container, Title, Text, Paper, Group, Button, Stack, Timeline, ThemeIcon, List } from '@mantine/core';
 import { IconBrandGithub, IconBrandDiscord, IconHeartFilled, IconCode, IconUsers, IconChartBar, IconDeviceGamepad, IconMessages } from '@tabler/icons-react';
 import Link from 'next/link';

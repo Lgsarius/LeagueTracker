@@ -7,7 +7,7 @@
   [![Mantine UI](https://img.shields.io/badge/Mantine_UI-339AF0?style=for-the-badge&logo=mantine&logoColor=white)](https://mantine.dev/)
   [![License](https://img.shields.io/badge/License-MIT-green.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-  Ein Community-entwickelter League of Legends Tracker für die LostGames Freundesgruppe
+  Ein Community-entwickelter League of Legends Tracker für deine Freundesgruppe
 </div>
 
 ## 🎮 Features
@@ -96,5 +96,5 @@ Dieses Projekt ist unter der MIT-Lizenz lizenziert - siehe [LICENSE](LICENSE) f�
 
 <div align="center">
   <br />
-  <p>Mit ❤️ entwickelt von der LostGames Community</p>
+  <p>Mit ❤️ entwickelt</p>
 </div>
